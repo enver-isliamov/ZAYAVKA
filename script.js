@@ -1,34 +1,91 @@
-function sendToTelegram() {
-            const phoneNumber = "+79780703665"; // здесь можно вставить номер телефона клиента
-            const telegramBotToken = "7134836219:AAFOKRDl_f7_nft2Q52UxXFx244Gpqs7DPs";
-            const chatId = "96609347";
-            const message = `
-                Имя клиента: Денис Грошев
-                Телефон: ${phoneNumber}
-                Заказ: ❱ Pirelli Scorpion ➽ 255/55/R16 ➽ Зима ➽ без дисков
-                Цена за месяц: 600
-                Кол-во шин: 4
-                Наличие дисков: Без дисков
-                Начало: 29.06.2024
-                Напомнить: 22.08.2024
-                Окончание: 29.08.2024
-                Склад хранения: ABD13
-                Сумма заказа: 1200
-                Долг: -
-                Договор: 240629
-                Статус: Активный
-                Источник трафика: ❰AVITO❱
-            `;
-            const encodedMessage = encodeURIComponent(message);
-            const telegramUrl = `https://api.telegram.org/bot${telegramBotToken}/sendMessage?chat_id=${chatId}&text=${encodedMessage}`;
+        const telegramBotToken = "7134836219:AAFOKRDl_f7_nft2Q52UxXFx244Gpqs7DPs";
+        const chatId = "96609347";
 
-            fetch(telegramUrl)
-                .then(response => response.json())
-                .then(data => {
-                    alert('Данные успешно отправлены в Telegram!');
-                })
-                .catch(error => {
-                    console.error('Ошибка при отправке данных в Telegram:', error);
-                    alert('Произошла ошибка при отправке данных в Telegram.');
-                });
+        function calculateTotal() {
+            const monthlyPrice = document.getElementById('monthlyPrice').value;
+            const tireCount = document.getElementById('tireCount').value;
+            const totalPrice = monthlyPrice * tireCount;
+            document.getElementById('totalPrice').value = totalPrice;
         }
+
+        function generateContractNumber() {
+            const currentDate = new Date();
+            const year = currentDate.getFullYear().toString().slice(-2);
+            const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+            const day = String(currentDate.getDate()).padStart(2, '0');
+            const hour = String(currentDate.getHours()).padStart(2, '0');
+            const contractNumber = `${year}${month}${day}${hour}`;
+            return contractNumber;
+        }
+
+        function sendToTelegram() {
+            const name = document.getElementById('clientName').value;
+            const phone = document.getElementById('phone').value;
+            const order = document.getElementById('order').value;
+            const monthlyPrice = document.getElementById('monthlyPrice').value;
+            const tireCount = document.getElementById('tireCount').value;
+            const hasDisk = document.getElementById('hasDisk').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const reminderDate = document.getElementById('reminderDate').value;
+            const storage = document.getElementById('storage').value;
+            const sezon = document.getElementById('seZon').value;
+            const totalPrice = document.getElementById('totalPrice').value;
+            const contractNumber = document.getElementById('contractNumber').value;
+            const trafficSource = document.getElementById('trafficSource').value;
+
+            const message = `
+❱❱❱❱❱ ✅ КЛИЕНТ ✅ ❰❰❰❰❰
+
+${clientName} ${phone}
+🛞: ${tireCount}шт.❱❱${hasDisk} ❱❱ [${sezon}]
+Марка:❱❱ ${order}
+
+
+🗓Хранение: ❱${startDate} ➽ ${endDate}
+---------------
+💳 Сумма заказа: ${totalPrice} [${monthlyPrice}мес.]
+☎️ Напоминание об окончании скрока: ${reminderDate} 📞
+---------------
+Договор: ${contractNumber} | Склад: ${storage}
+Источник трафика: ${trafficSource}
+            `;
+
+            fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    text: message
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    alert('Данные успешно отправлены в Telegram!');
+                } else {
+                    alert('Ошибка при отправке данных в Telegram.');
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при отправке данных в Telegram.');
+            });
+
+            // Отправка копии на номер телефона
+            const phoneNumber = document.getElementById('phone').value;
+            const smsMessage = `
+Уважаемый ${clientName}, Ваши данные были отправлены в Telegram:
+Заказ: ${order}
+Цена за месяц: ${monthlyPrice}
+Кол-во шин: ${tireCount}
+Сумма заказа: ${totalPrice}
+`;
+            // Здесь нужно реализовать логику отправки SMS-сообщения на указанный номер
+            console.log(`SMS-сообщение отправлено на номер ${phoneNumber}: ${smsMessage}`);
+        }
+
+        // Генерируем номер договора при загрузке страницы
+        document.getElementById('contractNumber').value = generateContractNumber();
