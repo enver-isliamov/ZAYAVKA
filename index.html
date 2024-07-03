@@ -4,64 +4,274 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Карточка клиента</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .card-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+        }
+        .status {
+            background-color: #4CAF50;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .card-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .field {
+            margin-bottom: 10px;
+        }
+        .field-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .field-value input, .field-value select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            color: #333;
+        }
+        .field-value input[type="date"] {
+            font-family: Arial, sans-serif;
+        }
+        .send-button {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .send-button button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .send-button button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-    <div class="client-card">
+    <div class="card">
         <div class="card-header">
-            <h2 class="client-name">Денис Грошев</h2>
-            <span class="client-status active">Активный</span>
-        </div>
+      <div class="field">
+                <div class="field-label">Клиент</div>
+                <div class="field-value"><input type="text" id="clientName" placeholder="ФИО"</div>
+            </div>
         <div class="card-body">
-            <form id="client-form">
-                <label for="phone"><strong>Телефон:</strong></label>
-                <input type="text" id="phone" name="phone" value="+79783147700">
 
-                <label for="order"><strong>Заказ:</strong></label>
-                <input type="text" id="order" name="order" value="Pirelli Scorpion 255/55/R16, Зима, без дисков">
 
-                <label for="price"><strong>Цена за месяц:</strong></label>
-                <input type="number" id="price" name="price" value="600">
 
-                <label for="quantity"><strong>Количество шин:</strong></label>
-                <input type="number" id="quantity" name="quantity" value="4">
-
-                <label for="disks"><strong>Наличие дисков:</strong></label>
-                <select id="disks" name="disks">
-                    <option value="Без дисков" selected>Без дисков</option>
-                    <option value="С дисками">С дисками</option>
-                </select>
-
-                <label for="start"><strong>Начало:</strong></label>
-                <input type="date" id="start" name="start" value="2024-06-29">
-
-                <label for="remind"><strong>Напомнить:</strong></label>
-                <input type="date" id="remind" name="remind" value="2024-08-22">
-
-                <label for="end"><strong>Окончание:</strong></label>
-                <input type="date" id="end" name="end" value="2024-08-29">
-
-                <label for="storage"><strong>Склад хранения:</strong></label>
-                <input type="text" id="storage" name="storage" value="ABD13">
-
-                <label for="cell"><strong>Ячейка:</strong></label>
-                <input type="text" id="cell" name="cell" value="AR1">
-
-                <label for="total"><strong>Сумма заказа:</strong></label>
-                <input type="number" id="total" name="total" value="1200">
-
-                <label for="contract"><strong>Договор:</strong></label>
-                <input type="text" id="contract" name="contract" value="240629">
-
-                <label for="source"><strong>Источник трафика:</strong></label>
-                <input type="text" id="source" name="source" value="AVITO">
-
-                <div class="form-actions">
-                    <button onclick="sendToTelegram()">Отправить в Telegram</button>
-              </div>
-            </form>
-                 </div>
+            <div class="field">
+                <div class="field-label">Телефон</div>
+                <div class="field-value"><input type="tel" id="phone" placeholder="+7 (978)-xxx-xx-xx"></div>
+            </div>
+            <div class="field">
+                <div class="field-label">Марка ➽ Размер ➽ Состояние</div>
+                <div class="field-value"><input type="text" id="order" placeholder="❱Pirelli Scorpion ➽ 255/55/R16 ➽ Зима ➽ без дисков"></div>
+            </div>
+            <div class="field">
+                <div class="field-label">Цена за месяц</div>
+                <div class="field-value">
+                    <select id="monthlyPrice" onchange="calculateTotal()">
+                        <option value="500">500</option>
+                        <option value="600" selected>600</option>
+                        <option value="700">700</option>
+                        <option value="800">800</option>
+                        <option value="900">900</option>
+                        <option value="1000">1000</option>
+                    </select>
+                </div>
+            </div>
+            <div class="field">
+                <div class="field-label">Кол-во шин</div>
+                <div class="field-value">
+                    <select id="tireCount" onchange="calculateTotal()">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4" selected>4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                    </select>
+                </div>
+            </div>
+            <div class="field">
+                <div class="field-label">Наличие дисков</div>
+                <div class="field-value">
+                    <select id="hasDisk">
+                        <option value="Без дисков">Без дисков</option>
+                        <option value="С дисками">С дисками</option>
+                    </select>
+                </div>
+            </div>
+<div class="field">
+                <div class="field-label">Сезон</div>
+                <div class="field-value">
+                    <select id="seZon">
+                        <option value="Зима">Зима</option>
+                        <option value="Лето">Лето</option>
+                    </select>
+                </div>
+            </div>
+            <div class="field">
+                <div class="field-label">Начало</div>
+                <div class="field-value"><input type="date" id="startDate" value="2024-06-29"></div>
+            </div>
+            <div class="field">
+                <div class="field-label">Окончание</div>
+                <div class="field-value"><input type="date" id="endDate" value="2024-08-29"></div>
+            </div>
+            <div class="field">
+                <div class="field-label">Напомнить</div>
+                <div class="field-value"><input type="date" id="reminderDate" value="2024-08-22"></div>
+            </div>
+            <div class="field">
+                <div class="field-label">Склад хранения</div>
+                <div class="field-value"><input type="text" id="storage" value="ABD13"></div>
+            </div>
+            
+            <div class="field">
+                <div class="field-label">Сумма заказа</div>
+                <div class="field-value"><input type="number" id="totalPrice" value="2400" readonly></div>
+            </div>
+            <div class="field">
+                <div class="field-label">Договор</div>
+                <div class="field-value"><input type="text" id="contractNumber" value="" readonly></div>
+            </div>
+            <div class="field">
+                <div class="field-label">Источник трафика</div>
+                <div class="field-value"><input type="text" id="trafficSource" value="❰AVITO❱"></div>
+            </div>
+            <div class="send-button">
+                <button onclick="sendToTelegram()">Отправить в Telegram</button>
+            </div>
+        </div>
     </div>
-    <script src="script.js"></script>
+    <script>
+        const telegramBotToken = "7134836219:AAFOKRDl_f7_nft2Q52UxXFx244Gpqs7DPs";
+        const chatId = "96609347";
+
+        function calculateTotal() {
+            const monthlyPrice = document.getElementById('monthlyPrice').value;
+            const tireCount = document.getElementById('tireCount').value;
+            const totalPrice = monthlyPrice * tireCount;
+            document.getElementById('totalPrice').value = totalPrice;
+        }
+
+        function generateContractNumber() {
+            const currentDate = new Date();
+            const year = currentDate.getFullYear().toString().slice(-2);
+            const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+            const day = String(currentDate.getDate()).padStart(2, '0');
+            const hour = String(currentDate.getHours()).padStart(2, '0');
+            const contractNumber = `${year}${month}${day}${hour}`;
+            return contractNumber;
+        }
+
+        function sendToTelegram() {
+            const name = document.getElementById('clientName').value;
+            const phone = document.getElementById('phone').value;
+            const order = document.getElementById('order').value;
+            const monthlyPrice = document.getElementById('monthlyPrice').value;
+            const tireCount = document.getElementById('tireCount').value;
+            const hasDisk = document.getElementById('hasDisk').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const reminderDate = document.getElementById('reminderDate').value;
+            const storage = document.getElementById('storage').value;
+            const sezon = document.getElementById('seZon').value;
+            const totalPrice = document.getElementById('totalPrice').value;
+            const contractNumber = document.getElementById('contractNumber').value;
+            const trafficSource = document.getElementById('trafficSource').value;
+
+            const message = `
+❱❱❱❱❱ ✅ КЛИЕНТ ✅ ❰❰❰❰❰
+
+${clientName} ${phone}
+🛞: ${tireCount}шт.❱❱${hasDisk} ❱❱ [${sezon}]
+Марка:❱❱ ${order}
+
+
+🗓Хранение: ❱${startDate} ➽ ${endDate}
+---------------
+💳 Сумма заказа: ${totalPrice} [${monthlyPrice}мес.]
+☎️ Напоминание об окончании скрока: ${reminderDate} 📞
+---------------
+Договор: ${contractNumber} | Склад: ${storage}
+Источник трафика: ${trafficSource}
+            `;
+
+            fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    text: message
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    alert('Данные успешно отправлены в Telegram!');
+                } else {
+                    alert('Ошибка при отправке данных в Telegram.');
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при отправке данных в Telegram.');
+            });
+
+            // Отправка копии на номер телефона
+            const phoneNumber = document.getElementById('phone').value;
+            const smsMessage = `
+Уважаемый ${clientName}, Ваши данные были отправлены в Telegram:
+Заказ: ${order}
+Цена за месяц: ${monthlyPrice}
+Кол-во шин: ${tireCount}
+Сумма заказа: ${totalPrice}
+`;
+            // Здесь нужно реализовать логику отправки SMS-сообщения на указанный номер
+            console.log(`SMS-сообщение отправлено на номер ${phoneNumber}: ${smsMessage}`);
+        }
+
+        // Генерируем номер договора при загрузке страницы
+        document.getElementById('contractNumber').value = generateContractNumber();
+    </script>
 </body>
 </html>
