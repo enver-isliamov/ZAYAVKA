@@ -35,9 +35,6 @@
                 <label for="start"><strong>Начало:</strong></label>
                 <input type="date" id="start" name="start" value="2024-06-29">
 
-                <label for="duration"><strong>Срок:</strong></label>
-                <input type="number" id="duration" name="duration" value="2">
-
                 <label for="remind"><strong>Напомнить:</strong></label>
                 <input type="date" id="remind" name="remind" value="2024-08-22">
 
@@ -53,9 +50,6 @@
                 <label for="total"><strong>Сумма заказа:</strong></label>
                 <input type="number" id="total" name="total" value="1200">
 
-                <label for="debt"><strong>Долг:</strong></label>
-                <input type="text" id="debt" name="debt" value="-">
-
                 <label for="contract"><strong>Договор:</strong></label>
                 <input type="text" id="contract" name="contract" value="240629">
 
@@ -63,11 +57,10 @@
                 <input type="text" id="source" name="source" value="AVITO">
 
                 <div class="form-actions">
-                    <button type="submit">Сохранить</button>
-                    <button type="button" onclick="cancelEdit()">Отмена</button>
-                </div>
+                    <button onclick="sendToTelegram()">Отправить в Telegram</button>
+              </div>
             </form>
-        </div>
+                 </div>
     </div>
     <script src="script.js"></script>
 </body>
