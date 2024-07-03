@@ -1,5 +1,5 @@
 function sendToTelegram() {
-            const phoneNumber = "+79780703665"; // здесь можно вставить номер телефона клиента
+            const phoneNumber = ${phoneNumber}; // здесь можно вставить номер телефона клиента
             const telegramBotToken = "7134836219:AAFOKRDl_f7_nft2Q52UxXFx244Gpqs7DPs";
             const chatId = "96609347";
             const message = `
