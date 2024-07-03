@@ -1,48 +1,52 @@
-document.getElementById('client-form').addEventListener('submit', function(event) {
-    event.preventDefault();
+document.getElementById('submitBtn').addEventListener('click', function() {
+    // Собираем данные с редактируемых полей
+    let clientName = document.querySelector('.client-name').textContent.trim();
+    let phone = document.querySelector('p:nth-child(2) span').textContent.trim();
+    let order = document.querySelector('p:nth-child(3) span').textContent.trim();
+    let price = document.querySelector('p:nth-child(4) span').textContent.trim();
+    let quantity = document.querySelector('p:nth-child(5) span').textContent.trim();
+    let availability = document.querySelector('p:nth-child(6) span').textContent.trim();
+    let startDate = document.querySelector('p:nth-child(7) span').textContent.trim();
+    let duration = document.querySelector('p:nth-child(8) span').textContent.trim();
+    let remindDate = document.querySelector('p:nth-child(9) span').textContent.trim();
+    let endDate = document.querySelector('p:nth-child(10) span').textContent.trim();
+    let storage = document.querySelector('p:nth-child(11) span').textContent.trim();
+    let cell = document.querySelector('p:nth-child(12) span').textContent.trim();
+    let orderAmount = document.querySelector('p:nth-child(13) span').textContent.trim();
+    let debt = document.querySelector('p:nth-child(14) span').textContent.trim();
+    let contract = document.querySelector('p:nth-child(15) span').textContent.trim();
+    let trafficSource = document.querySelector('p:nth-child(16) span').textContent.trim();
     
-    // Собираем данные из формы
-    const formData = new FormData(event.target);
-    const data = {
-        phone: formData.get('phone'),
-        order: formData.get('order'),
-        price: formData.get('price'),
-        quantity: formData.get('quantity'),
-        disks: formData.get('disks'),
-        start: formData.get('start'),
-        duration: formData.get('duration'),
-        remind: formData.get('remind'),
-        end: formData.get('end'),
-        storage: formData.get('storage'),
-        cell: formData.get('cell'),
-        total: formData.get('total'),
-        debt: formData.get('debt'),
-        contract: formData.get('contract'),
-        source: formData.get('source')
-    };
+    // Формируем сообщение для отправки в Telegram
+    let message = `
+    Имя клиента: ${clientName}
+    Телефон: ${phone}
+    Заказ: ${order}
+    Цена за месяц: ${price} руб.
+    Количество шин: ${quantity}
+    Наличие дисков: ${availability}
+    Начало: ${startDate}
+    Срок: ${duration} месяца
+    Напомнить: ${remindDate}
+    Окончание: ${endDate}
+    Склад хранения: ${storage}
+    Ячейка: ${cell}
+    Сумма заказа: ${orderAmount} руб.
+    Долг: ${debt}
+    Договор: ${contract}
+    Источник трафика: ${trafficSource}
+    `;
 
-    // Отправка данных в Google Sheets
-    fetch('https://script.google.com/macros/s/AKfycbyu8TTf7tNHDQn-YkoSe1X1m_7KDBdMsj6dntgO-pSOnm9eiuMh4m5cTofGuJK71B9g/exec', {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(result => {
-        if (result.success) {
-            alert('Данные сохранены');
-        } else {
-            alert('Ошибка при сохранении данных');
-        }
-    })
-    .catch(error => {
-        console.error('Ошибка:', error);
-        alert('Ошибка при сохранении данных');
-    });
+    // Отправка данных в Telegram бота
+    fetch(`https://api.telegram.org/bot<7134836219:AAFOKRDl_f7_nft2Q52UxXFx244Gpqs7DPs>/sendMessage?chat_id=<96609347>&text=${encodeURIComponent(message)}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Ошибка отправки данных в Telegram');
+            }
+            alert('Данные успешно отправлены в Telegram!');
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            alert('Произошла ошибка при отправке данных в Telegram.');
+        });
 });
-
-function cancelEdit() {
-    window.location.reload();
-}
