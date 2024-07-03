@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Карточка клиента</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="client-card">
+        <div class="card-header">
+            <h2 class="client-name">Денис Грошев</h2>
+            <span class="client-status active">Активный</span>
+        </div>
+        <div class="card-body">
+            <form id="client-form">
+                <label for="phone"><strong>Телефон:</strong></label>
+                <input type="text" id="phone" name="phone" value="+79783147700">
+
+                <label for="order"><strong>Заказ:</strong></label>
+                <input type="text" id="order" name="order" value="Pirelli Scorpion 255/55/R16, Зима, без дисков">
+
+                <label for="price"><strong>Цена за месяц:</strong></label>
+                <input type="number" id="price" name="price" value="600">
+
+                <label for="quantity"><strong>Количество шин:</strong></label>
+                <input type="number" id="quantity" name="quantity" value="4">
+
+                <label for="disks"><strong>Наличие дисков:</strong></label>
+                <select id="disks" name="disks">
+                    <option value="Без дисков" selected>Без дисков</option>
+                    <option value="С дисками">С дисками</option>
+                </select>
+
+                <label for="start"><strong>Начало:</strong></label>
+                <input type="date" id="start" name="start" value="2024-06-29">
+
+                <label for="duration"><strong>Срок:</strong></label>
+                <input type="number" id="duration" name="duration" value="2">
+
+                <label for="remind"><strong>Напомнить:</strong></label>
+                <input type="date" id="remind" name="remind" value="2024-08-22">
+
+                <label for="end"><strong>Окончание:</strong></label>
+                <input type="date" id="end" name="end" value="2024-08-29">
+
+                <label for="storage"><strong>Склад хранения:</strong></label>
+                <input type="text" id="storage" name="storage" value="ABD13">
+
+                <label for="cell"><strong>Ячейка:</strong></label>
+                <input type="text" id="cell" name="cell" value="AR1">
+
+                <label for="total"><strong>Сумма заказа:</strong></label>
+                <input type="number" id="total" name="total" value="1200">
+
+                <label for="debt"><strong>Долг:</strong></label>
+                <input type="text" id="debt" name="debt" value="-">
+
+                <label for="contract"><strong>Договор:</strong></label>
+                <input type="text" id="contract" name="contract" value="240629">
+
+                <label for="source"><strong>Источник трафика:</strong></label>
+                <input type="text" id="source" name="source" value="AVITO">
+
+                <div class="form-actions">
+                    <button type="submit">Сохранить</button>
+                    <button type="button" onclick="cancelEdit()">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
