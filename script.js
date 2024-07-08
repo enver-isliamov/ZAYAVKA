@@ -19,7 +19,7 @@
         }
 
         function sendToTelegram() {
-            const name = document.getElementById('clientName').value;
+            const clientName = document.getElementById('clientName').value;
             const phone = document.getElementById('phone').value;
             const order = document.getElementById('order').value;
             const monthlyPrice = document.getElementById('monthlyPrice').value;
