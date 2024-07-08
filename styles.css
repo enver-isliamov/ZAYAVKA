@@ -1,76 +1,62 @@
-<style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 20px;
-        }
-        .card {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            padding: 20px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .card-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin: 0;
-        }
-        .status {
-            background-color: #4CAF50;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        .card-body {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-        .field {
-            margin-bottom: 10px;
-        }
-        .field-label {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 5px;
-        }
-        .field-value input, .field-value select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-            color: #333;
-        }
-        .field-value input[type="date"] {
-            font-family: Arial, sans-serif;
-        }
-        .send-button {
-            grid-column: 1 / -1;
-            text-align: center;
-            margin-top: 20px;
-        }
-        .send-button button {
-            background-color: #0D99FF;;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .send-button button:hover {
-            background-color: #0088cc;
-        }
-    </style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 20px;
+}
+.card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+.card-header {
+    margin-bottom: 20px;
+}
+.field {
+    margin-bottom: 10px;
+}
+.field-label {
+    font-size: 14px;
+    color: #3390EC;
+    margin-bottom: 5px;
+}
+.field-value input, .field-value select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    color: #333;
+}
+.field-value input[type="date"] {
+    font-family: Arial, sans-serif;
+}
+.send-button {
+    grid-column: 1 / -1;
+    text-align: center;
+    margin-top: 20px;
+}
+.send-button button {
+    background-color: #0D99FF;;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+.send-button button:hover {
+    background-color: #0088cc;
+}
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+.full-width {
+    grid-column: 1 / -1;
+}
