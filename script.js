@@ -19,9 +19,6 @@
         }
 
 
-function goToPage(url) {
-    window.location.href = url;
-  }
 
 </script>
         function sendToTelegram() {
