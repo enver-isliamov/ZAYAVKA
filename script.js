@@ -18,6 +18,12 @@
             return contractNumber;
         }
 
+
+function goBack() {
+  window.history.back();
+}
+
+</script>
         function sendToTelegram() {
             const clientName = document.getElementById('clientName').value;
             const phone = document.getElementById('phone').value;
