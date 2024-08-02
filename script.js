@@ -19,9 +19,9 @@
         }
 
 
-function goBack() {
-  window.history.back();
-}
+function goToPage(url) {
+    window.location.href = url;
+  }
 
 </script>
         function sendToTelegram() {
