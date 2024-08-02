@@ -25,6 +25,28 @@
         // Устанавливаем значение в input
         document.getElementById('startDate').value = formattedDate;
 
+//***** ПОДСЧЕТ ДАТ ***** //
+function calculateTotal() {
+            // Получаем выбранное количество месяцев
+            const tireCount = parseInt(document.getElementById('tireCount').value);
+            // Получаем дату начала
+            const startDate = new Date(document.getElementById('startDate').value);
+            // Увеличиваем дату начала на количество месяцев
+            const endDate = new Date(startDate);
+            endDate.setMonth(startDate.getMonth() + tireCount);
+            // Устанавливаем значение в поле "Дата окончания"
+            document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
+
+            // Устанавливаем дату напоминания на 7 дней раньше "Дата окончания"
+            const reminderDate = new Date(endDate);
+            reminderDate.setDate(endDate.getDate() - 7);
+            document.getElementById('reminderDate').value = reminderDate.toISOString().split('T')[0];
+        }
+
+        // Вызываем функцию при загрузке страницы для инициализации значений
+        window.onload = calculateTotal;
+
+
 
         function sendToTelegram() {
             const clientName = document.getElementById('clientName').value;
