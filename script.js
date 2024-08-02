@@ -18,9 +18,14 @@
             return contractNumber;
         }
 
+         // Получаем текущую дату
+        const today = new Date();
+        // Форматируем дату в формате YYYY-MM-DD
+        const formattedDate = today.toISOString().split('T')[0];
+        // Устанавливаем значение в input
+        document.getElementById('startDate').value = formattedDate;
 
 
-</script>
         function sendToTelegram() {
             const clientName = document.getElementById('clientName').value;
             const phone = document.getElementById('phone').value;
