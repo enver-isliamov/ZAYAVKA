@@ -26,7 +26,7 @@
         document.getElementById('startDate').value = formattedDate;
 
 //***** ПОДСЧЕТ ДАТ ***** //
-function calculateTotal() {
+function calculateDate() {
             // Получаем выбранное количество месяцев
             const tireCount = parseInt(document.getElementById('tireCount').value);
             // Получаем дату начала
@@ -44,7 +44,7 @@ function calculateTotal() {
         }
 
         // Вызываем функцию при загрузке страницы для инициализации значений
-        window.onload = calculateTotal;
+        window.onload = calculateDate;
 
 
 
