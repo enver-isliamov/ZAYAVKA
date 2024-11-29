@@ -1,12 +1,18 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Карточка клиента</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles-ZA.css">
 </head>
 <body>
+  <div class="container">
+    <div id="signature-pad">
+    <canvas id="canvas"></canvas>
+<button id="clear">Очистить</button>
+</div>
     <div class="card">
         <div class="card-header">
             <div class="field">
@@ -17,6 +23,7 @@
                 <div class="field-label">Телефон</div>
                 <div class="field-value"><input type="tel" id="phone" placeholder="+7 (978)-xxx-xx-xx"></div>
             </div>
+          
             <div class="field">
                 <div class="field-label">Марка ➽ Размер ➽ Состояние</div>
                 <div class="field-value"><input type="text" id="order" placeholder="Pirelli Scorpion 255/55/R16 состояние"></div>
@@ -69,6 +76,8 @@
                     </select>
                 </div>
             </div>
+
+
             <div class="field">
                 <div class="field-label">Начало</div>
                 <div class="field-value"><input type="date" id="startDate" value="2024-06-29"></div>
@@ -97,12 +106,15 @@
                 <div class="field-label">Источник трафика</div>
                 <div class="field-value"><input type="text" id="trafficSource" value="❰AVITO❱"></div>
             </div>
+          
+                    
             <div class="send-button">
                <button onclick="window.location.href='https://otelshin.ru/'">Назад</button>
                 <button onclick="sendToTelegram()">Отправить в Telegram</button>
             </div>
         </div>
     </div>
-    <script src="script.js"></script>
+    </div>
+    <script src="scriptZVK.js"></script>
 </body>
 </html>
