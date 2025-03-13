@@ -1,12 +1,6 @@
 const telegramBotToken = "7134836219:AAFOKRDl_f7_nft2Q52UxXFx244Gpqs7DPs";
 const chatId = "96609347";
 
-// Настройки Google Sheets
-const SPREADSHEET_ID = '1IBBn38ZD-TOgzO9VjYAyKz8mchg_RwWyD6kZ0Lu729A';
-const SHEET_NAME = 'Актуальные клиенты';
-const API_KEY = 'AIzaSyCfufjRxEecMLqO8MGsODu1tXYSjmhUHJU';
-const CLIENT_ID = '613236074236-938866s3a34k53fik0dq6rsiurk36t8h.apps.googleusercontent.com';
-
 function calculateTotal() {
     const monthlyPrice = document.getElementById('monthlyPrice').value;
     const tireCount = document.getElementById('tireCount').value;
@@ -31,7 +25,7 @@ const formattedDate = today.toISOString().split('T')[0];
 // Устанавливаем значение в input
 document.getElementById('startDate').value = formattedDate;
 
-// Подсчет дат
+//***** ПОДСЧЕТ ДАТ ***** //
 function calculateDate() {
     // Получаем выбранное количество месяцев
     const tireCount = parseInt(document.getElementById('tireCount').value);
@@ -55,94 +49,7 @@ window.onload = calculateDate;
 // Добавляем обработчик события input для tireCount
 document.getElementById('tireCount').addEventListener('input', calculateDate);
 
-// Аутентификация Google API
-async function authenticate() {
-    try {
-        console.log('Инициализация Google API...');
-        await gapi.client.init({
-            apiKey: API_KEY,
-            clientId: CLIENT_ID,
-            scope: 'https://www.googleapis.com/auth/spreadsheets'
-        });
-        console.log('Google API успешно инициализирован');
-    } catch (error) {
-        console.error('Ошибка аутентификации Google API:', error);
-        throw error;
-    }
-}
-
-// Поиск клиента в таблице
-async function findClient(phone) {
-    try {
-        console.log(`Поиск клиента с телефоном: ${phone}`);
-        const response = await gapi.client.sheets.spreadsheets.values.get({
-            spreadsheetId: SPREADSHEET_ID,
-            range: `${SHEET_NAME}!A:B`
-        });
-        const rows = response.result.values || [];
-        for (let i = 0; i < rows.length; i++) {
-            if (rows[i][1] === phone) {
-                console.log(`Клиент найден в строке ${i + 1}`);
-                return i + 1;
-            }
-        }
-        console.log('Клиент не найден');
-        return -1;
-    } catch (error) {
-        console.error('Ошибка при поиске клиента:', error);
-        throw error;
-    }
-}
-
-// Обновление клиента
-async function updateClient(row, data) {
-    try {
-        console.log(`Обновление клиента в строке ${row}`);
-        const range = `${SHEET_NAME}!A${row}:O${row}`;
-        const values = [[
-            data.name, data.phone, data.totalPrice, data.monthlyPrice, data.tireCount,
-            data.hasDisk, data.sezon, data.order, data.size || '', data.condition || '',
-            data.startDate, data.endDate, data.reminderDate, data.contractNumber,
-            data.storage
-        ]];
-        await gapi.client.sheets.spreadsheets.values.update({
-            spreadsheetId: SPREADSHEET_ID,
-            range: range,
-            valueInputOption: 'RAW',
-            resource: { values }
-        });
-        console.log('Данные клиента успешно обновлены');
-    } catch (error) {
-        console.error('Ошибка при обновлении клиента:', error);
-        throw error;
-    }
-}
-
-// Добавление нового клиента
-async function addClient(data) {
-    try {
-        console.log('Добавление нового клиента');
-        const values = [[
-            data.name, data.phone, data.totalPrice, data.monthlyPrice, data.tireCount,
-            data.hasDisk, data.sezon, data.order, data.size || '', data.condition || '',
-            data.startDate, data.endDate, data.reminderDate, data.contractNumber,
-            data.storage
-        ]];
-        await gapi.client.sheets.spreadsheets.values.append({
-            spreadsheetId: SPREADSHEET_ID,
-            range: SHEET_NAME,
-            valueInputOption: 'RAW',
-            resource: { values }
-        });
-        console.log('Новый клиент успешно добавлен');
-    } catch (error) {
-        console.error('Ошибка при добавлении клиента:', error);
-        throw error;
-    }
-}
-
-// Основная функция отправки данных
-async function sendToTelegramAndSheets() {
+function sendToTelegram() {
     const clientName = document.getElementById('clientName').value;
     const phone = document.getElementById('phone').value;
     const order = document.getElementById('order').value;
@@ -155,75 +62,134 @@ async function sendToTelegramAndSheets() {
     const storage = document.getElementById('storage').value;
     const sezon = document.getElementById('seZon').value;
     const totalPrice = document.getElementById('totalPrice').value;
-    const contractNumber = document.getElementById('contractNumber').value || generateContractNumber();
+    const contractNumber = document.getElementById('contractNumber').value;
+    const trafficSource = document.getElementById('trafficSource').value;
 
-    // Формируем сообщение для Telegram
+    // Получаем изображение из canvas
+    const canvas = document.getElementById('canvas');
+    const dataURL = canvas.toDataURL('image/png');
+
+    // Формируем сообщение
     const message = `
+❱❱❱❱❱ ✅ КЛИЕНТ Otelshin.tu ✅ ❰❰❰❰❰
+
 ${clientName} ${phone}
-💳 Сумма заказа: ${totalPrice}₽ [${monthlyPrice}₽/мес.]
-🛞: ${tireCount}шт.❱❱${hasDisk}❱❱ [${sezon}]
-Марка:❱❱ ${order} · · 
+🛞: ${tireCount}шт.❱❱${hasDisk} ❱❱ [${sezon}]
+Марка:❱❱ ${order}
+
 🗓Хранение: ❱${startDate} ➽ ${endDate}
 ---------------
-☎️ Напоминание об окончании срока: ${reminderDate}
+💳 Сумма заказа: ${totalPrice} [${monthlyPrice}мес.]
+☎️ Напоминание об окончании срока: ${reminderDate} 📞
 ---------------
 Договор: ${contractNumber} (на сайте Otelshin.tu) | Склад: ${storage}
-`;
+Источник трафика: ${trafficSource}
+    `;
 
-    // Отправка в Telegram
-    try {
-        console.log('Отправка сообщения в Telegram...');
-        const telegramUrl = `https://api.telegram.org/bot${telegramBotToken}/sendMessage`;
-        const telegramResponse = await fetch(telegramUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: chatId,
-                text: message
-            })
+    // Отправляем изображение с текстом в качестве описания
+    sendImageWithCaption(dataURL, message);
+}
+
+function sendImageWithCaption(dataURL, caption) {
+    // Преобразуем изображение в Blob
+    fetch(dataURL)
+        .then(res => res.blob())
+        .then(blob => {
+            const formData = new FormData();
+            formData.append('chat_id', chatId);
+            formData.append('photo', blob, 'signature.png');
+            formData.append('caption', caption); // Добавляем текст в качестве описания
+
+            return fetch(`https://api.telegram.org/bot${telegramBotToken}/sendPhoto`, {
+                method: 'POST',
+                body: formData
+            });
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.ok) {
+                alert('Изображение с описанием успешно отправлено в Telegram!');
+            } else {
+                alert('Ошибка при отправке изображения с описанием в Telegram.');
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            alert('Произошла ошибка при отправке изображения с описанием в Telegram.');
         });
-        const telegramData = await telegramResponse.json();
-        if (telegramData.ok) {
-            console.log('Сообщение успешно отправлено в Telegram:', telegramData);
-        } else {
-            console.error('Ошибка Telegram API:', telegramData);
-        }
-    } catch (error) {
-        console.error('Ошибка при отправке в Telegram:', error);
-    }
+}
 
-    // Отправка в Google Sheets
-    try {
-        console.log('Загрузка Google API...');
-        await new Promise((resolve) => gapi.load('client', resolve));
-        await authenticate();
+// Отправка копии на номер телефона
+const phoneNumber = document.getElementById('phone').value;
+const smsMessage = `
+Уважаемый ${clientName}, Ваши данные были отправлены в Telegram:
+Заказ: ${order}
+Цена за месяц: ${monthlyPrice}
+Кол-во шин: ${tireCount}
+Сумма заказа: ${totalPrice}
+`;
+// Здесь нужно реализовать логику отправки SMS-сообщения на указанный номер
+console.log(`SMS-сообщение отправлено на номер ${phoneNumber}: ${smsMessage}`);
 
-        const clientData = {
-            name: clientName,
-            phone: phone,
-            totalPrice: totalPrice,
-            monthlyPrice: monthlyPrice,
-            tireCount: tireCount,
-            hasDisk: hasDisk,
-            sezon: sezon,
-            order: order,
-            startDate: startDate,
-            endDate: endDate,
-            reminderDate: reminderDate,
-            contractNumber: contractNumber,
-            storage: storage
-        };
+// Генерируем номер договора при загрузке страницы
+document.getElementById('contractNumber').value = generateContractNumber();
 
-        const clientRow = await findClient(phone);
-        if (clientRow !== -1) {
-            await updateClient(clientRow, clientData);
-        } else {
-            await addClient(clientData);
-        }
-    } catch (error) {
-        console.error('Ошибка при работе с Google Sheets:', error);
+//ПОДПИСЬ ///////////////
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let drawing = false;
+
+// Устанавливаем размеры canvas
+canvas.width = document.getElementById('signature-pad').clientWidth;
+canvas.height = document.getElementById('signature-pad').clientHeight;
+
+// Настройка стилей рисования
+ctx.strokeStyle = "#000"; // Цвет линии
+ctx.lineWidth = 2; // Ширина линии
+
+// Начало рисования
+function startDrawing(e) {
+    drawing = true;
+    ctx.beginPath();
+    ctx.moveTo(getX(e), getY(e));
+}
+
+// Рисование
+function draw(e) {
+    if (drawing) {
+        ctx.lineTo(getX(e), getY(e));
+        ctx.stroke();
     }
 }
 
-// Привязка к кнопке
-document.getElementById('submit')?.addEventListener('click', sendToTelegramAndSheets);
+// Окончание рисования
+function stopDrawing() {
+    drawing = false;
+    ctx.closePath();
+}
+
+// Получение координат X
+function getX(e) {
+    return e.offsetX !== undefined ? e.offsetX : e.touches[0].clientX - canvas.getBoundingClientRect().left;
+}
+
+// Получение координат Y
+function getY(e) {
+    return e.offsetY !== undefined ? e.offsetY : e.touches[0].clientY - canvas.getBoundingClientRect().top;
+}
+
+// Обработчики событий мыши
+canvas.addEventListener('mousedown', startDrawing);
+canvas.addEventListener('mousemove', draw);
+canvas.addEventListener('mouseup', stopDrawing);
+
+// Обработчики событий касания для мобильных устройств
+canvas.addEventListener('touchstart', startDrawing);
+canvas.addEventListener('touchmove', draw);
+canvas.addEventListener('touchend', stopDrawing);
+
+// Очистка canvas
+document.getElementById('clear').addEventListener('click', () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+});
+//ПОДПИСЬ <-- ///////////////
