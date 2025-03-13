@@ -193,3 +193,135 @@ document.getElementById('clear').addEventListener('click', () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 });
 //ПОДПИСЬ <-- ///////////////
+
+
+// --------------------------- ТЕСТОВАЯ ФУНКЦИЯ ОБНОВЛЕНИЕ ДАННЫХ Клиента --------
+// Настройки - замените на свои значения
+const SPREADSHEET_ID = '1IBBn38ZD-TOgzO9VjYAyKz8mchg_RwWyD6kZ0Lu729A'; // ID вашей Google таблицы
+const SHEET_NAME = 'Актуальные клиенты'; // Название листа
+const API_KEY = 'AIzaSyCfufjRxEecMLqO8MGsODu1tXYSjmhUHJU'; // API ключ Google
+const CLIENT_ID = '613236074236-938866s3a34k53fik0dq6rsiurk36t8h.apps.googleusercontent.com'; // Client ID из Google Cloud Console
+
+// Функция для парсинга данных из сообщения Telegram
+function parseOrderData(message) {
+    const data = {
+        name: message.match(/^[^\n]+/)[0].split(' +')[0],
+        phone: message.match(/\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}/)[0],
+        amount: message.match(/Сумма заказа: (\d+)₽/)[1],
+        amountPerMonth: message.match(/\[(\d+)₽\/мес\.\]/)[1],
+        quantity: message.match(/🛞: (\d+)шт\./)[1],
+        disks: message.match(/❱❱(.+?) ❱❱/)[1],
+        season: message.match(/\[(.+?)\]/)[1],
+        brand: message.match(/Марка:❱❱ (.+?) ·/)[1],
+        size: message.match(/· (.+?) ·/)[1],
+        condition: message.match(/· (.+?)$/m)[1],
+        storageStart: message.match(/🗓Хранение: ❱(.+?) ➽/)[1],
+        storageEnd: message.match(/➽ (.+?)$/m)[1],
+        reminder: message.match(/Напоминание об окончании срока: (.+?)$/m)[1],
+        contract: message.match(/Договор: (\d+)/)[1],
+        storageLocation: message.match(/Склад: (.+?)$/)[1]
+    };
+    return data;
+}
+
+// Аутентификация Google API
+async function authenticate() {
+    return gapi.client.init({
+        apiKey: API_KEY,
+        clientId: CLIENT_ID,
+        scope: 'https://www.googleapis.com/auth/spreadsheets'
+    });
+}
+
+// Поиск клиента в таблице
+async function findClient(phone) {
+    const response = await gapi.client.sheets.spreadsheets.values.get({
+        spreadsheetId: SPREADSHEET_ID,
+        range: `${SHEET_NAME}!A:B` // Предполагаем, что телефон во второй колонке
+    });
+
+    const rows = response.result.values || [];
+    for (let i = 0; i < rows.length; i++) {
+        if (rows[i][1] === phone) {
+            return i + 1; // Возвращаем номер строки (1-based)
+        }
+    }
+    return -1; // Клиент не найден
+}
+
+// Обновление существующего клиента
+async function updateClient(row, data) {
+    const range = `${SHEET_NAME}!A${row}:O${row}`;
+    const values = [[
+        data.name, data.phone, data.amount, data.amountPerMonth, data.quantity,
+        data.disks, data.season, data.brand, data.size, data.condition,
+        data.storageStart, data.storageEnd, data.reminder, data.contract,
+        data.storageLocation
+    ]];
+
+    await gapi.client.sheets.spreadsheets.values.update({
+        spreadsheetId: SPREADSHEET_ID,
+        range: range,
+        valueInputOption: 'RAW',
+        resource: { values }
+    });
+}
+
+// Добавление нового клиента
+async function addClient(data) {
+    const values = [[
+        data.name, data.phone, data.amount, data.amountPerMonth, data.quantity,
+        data.disks, data.season, data.brand, data.size, data.condition,
+        data.storageStart, data.storageEnd, data.reminder, data.contract,
+        data.storageLocation
+    ]];
+
+    await gapi.client.sheets.spreadsheets.values.append({
+        spreadsheetId: SPREADSHEET_ID,
+        range: SHEET_NAME,
+        valueInputOption: 'RAW',
+        resource: { values }
+    });
+}
+
+// Основная функция обработки заявки
+async function processOrder(message) {
+    try {
+        // Загрузка Google API
+        await new Promise((resolve) => {
+            gapi.load('client', resolve);
+        });
+
+        await authenticate();
+        
+        const orderData = parseOrderData(message);
+        const clientRow = await findClient(orderData.phone);
+
+        if (clientRow !== -1) {
+            // Клиент найден - обновляем данные
+            await updateClient(clientRow, orderData);
+            console.log('Данные клиента обновлены');
+        } else {
+            // Новый клиент - добавляем строку
+            await addClient(orderData);
+            console.log('Новый клиент добавлен');
+        }
+    } catch (error) {
+        console.error('Ошибка при обработке заявки:', error);
+    }
+}
+
+// Пример использования
+const telegramMessage = `Борис Кейдун +7 (978) 751-97-92
+💳 Сумма заказа: 2400₽ [600₽/мес.]
+🛞: 4шт.❱❱Без дисков ❱❱ [Лето]
+Марка:❱❱ Pirelli Cinturato P7 · 205/55/R16 · Без латок · 
+🗓Хранение: ❱2024-11-29 ➽ 2025-03-29
+---------------
+☎️ Напоминание об окончании срока: 2025-03-22 
+---------------
+Договор: 24112921 (на сайте Otelshin.tu) | Склад: ABD13`;
+
+// Вызов функции (раскомментируйте для использования)
+// processOrder(telegramMessage);
+
