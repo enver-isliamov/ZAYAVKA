@@ -76,8 +76,8 @@ body {
 
 #qr-container {
     width: 100%;
-    max-width: 300px;
-    height: 300px;
+    max-width: 200px;
+    height: 200px;
     position: relative;
     margin: 0 auto 10px auto;
     border: 1px solid #ddd;
