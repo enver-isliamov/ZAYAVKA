@@ -77,8 +77,8 @@ body {
 /* Стили для QR-кода */
 #qr-container {
     width: 100%;
-    max-width: 300px; /* Увеличено для лучшего отображения */
-    height: auto; /* Высота автоматически */
+    max-width: 300px;
+    height: auto;
     position: relative;
     margin: 0 auto 10px auto;
     border: 1px solid #ddd;
