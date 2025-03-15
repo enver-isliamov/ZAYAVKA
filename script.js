@@ -180,7 +180,7 @@ function startQrScanner() {
             console.log("Найдено камер:", cameras.length);
             html5QrcodeScanner.start(
                 { facingMode: "environment" }, // Предпочитаем заднюю камеру
-                { fps: 10, qrbox: { width: 250, height: 250 } },
+                { fps: 10, qrbox: { width: 200, height: 200 } },
                 (decodedText) => {
                     console.log("QR-код распознан:", decodedText);
                     let decodedContent = decodedText;
