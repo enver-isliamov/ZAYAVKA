@@ -134,4 +134,62 @@ console.log(`SMS-сообщение отправлено на номер ${phone
 // Генерируем номер договора при загрузке страницы
 document.getElementById('contractNumber').value = generateContractNumber();
 
+//ПОДПИСЬ ///////////////
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let drawing = false;
 
+// Устанавливаем размеры canvas
+canvas.width = document.getElementById('signature-pad').clientWidth;
+canvas.height = document.getElementById('signature-pad').clientHeight;
+
+// Настройка стилей рисования
+ctx.strokeStyle = "#000"; // Цвет линии
+ctx.lineWidth = 2; // Ширина линии
+
+// Начало рисования
+function startDrawing(e) {
+    drawing = true;
+    ctx.beginPath();
+    ctx.moveTo(getX(e), getY(e));
+}
+
+// Рисование
+function draw(e) {
+    if (drawing) {
+        ctx.lineTo(getX(e), getY(e));
+        ctx.stroke();
+    }
+}
+
+// Окончание рисования
+function stopDrawing() {
+    drawing = false;
+    ctx.closePath();
+}
+
+// Получение координат X
+function getX(e) {
+    return e.offsetX !== undefined ? e.offsetX : e.touches[0].clientX - canvas.getBoundingClientRect().left;
+}
+
+// Получение координат Y
+function getY(e) {
+    return e.offsetY !== undefined ? e.offsetY : e.touches[0].clientY - canvas.getBoundingClientRect().top;
+}
+
+// Обработчики событий мыши
+canvas.addEventListener('mousedown', startDrawing);
+canvas.addEventListener('mousemove', draw);
+canvas.addEventListener('mouseup', stopDrawing);
+
+// Обработчики событий касания для мобильных устройств
+canvas.addEventListener('touchstart', startDrawing);
+canvas.addEventListener('touchmove', draw);
+canvas.addEventListener('touchend', stopDrawing);
+
+// Очистка canvas
+document.getElementById('clear').addEventListener('click', () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+});
+//ПОДПИСЬ <-- ///////////////
