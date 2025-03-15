@@ -11,10 +11,10 @@ function calculateTotal() {
 
 function generateContractNumber() {
     const currentDate = new Date();
-    const year = currentDate.getFullYear().toString().slice(-2);
-    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-    const day = String(currentDate.getDate()).padStart(2, '0');
-    const hour = String(currentDate.getHours()).padStart(2, '0');
+    const year = currentDate.getFullYear().toString().slice(-2); // Последние 2 цифры года
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Месяц (01-12)
+    const day = String(currentDate.getDate()).padStart(2, '0'); // День (01-31)
+    const hour = String(currentDate.getHours()).padStart(2, '0'); // Часы (00-23)
     return `${year}${month}${day}${hour}`;
 }
 
@@ -37,7 +37,7 @@ function calculateDate() {
     generateQRCode();
 }
 
-// Генерация QR-кода в формате vCard
+// Генерация QR-кода в формате vCard с динамическим номером договора
 function generateQRCode() {
     const clientName = document.getElementById('clientName').value;
     const phone = document.getElementById('phone').value;
@@ -51,8 +51,10 @@ function generateQRCode() {
     const storage = document.getElementById('storage').value;
     const sezon = document.getElementById('seZon').value;
     const totalPrice = document.getElementById('totalPrice').value;
-    const contractNumber = document.getElementById('contractNumber').value;
+    const contractNumber = generateContractNumber(); // Генерируем номер договора заново
     const trafficSource = document.getElementById('trafficSource').value;
+
+    document.getElementById('contractNumber').value = contractNumber; // Обновляем поле договора
 
     const noteText = `
 ❱❱❱❱❱ ✅ КЛИЕНТ Otelshin.tu ✅ ❰❰❰❰❰
@@ -164,20 +166,16 @@ function startQrScanner() {
 
     html5QrcodeScanner = new Html5Qrcode("qr-reader");
     html5QrcodeScanner.start(
-        { facingMode: "environment" }, // Задняя камера
-        { fps: 10, qrbox: { width: 250, height: 250 } }, // Увеличенная область сканирования 1:1
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 250, height: 250 } },
         (decodedText) => {
-            // Отображаем содержимое любого QR-кода
             let decodedContent = decodedText;
-
-            // Если это vCard, извлекаем поле NOTE
             if (decodedText.includes('BEGIN:VCARD')) {
                 const noteMatch = decodedText.match(/NOTE:(.+?)(?=END:VCARD|\n[A-Z]+:|$)/s);
                 if (noteMatch && noteMatch[1]) {
                     decodedContent = noteMatch[1].replace(/\\n/g, '\n');
                 }
             }
-
             document.getElementById('qrContent').textContent = decodedContent;
             document.getElementById('qrContent').style.display = 'block';
             stopQrScanner();
@@ -209,8 +207,7 @@ function stopQrScanner() {
 // Инициализация
 window.onload = () => {
     calculateDate();
-    document.getElementById('contractNumber').value = generateContractNumber();
-    generateQRCode();
+    generateQRCode(); // Изначально генерируем QR-код с актуальным номером договора
 
     const inputs = document.querySelectorAll('input, select');
     inputs.forEach(input => {
