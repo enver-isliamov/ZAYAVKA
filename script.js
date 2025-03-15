@@ -1,182 +1,114 @@
-const telegramBotToken = "7134836219:AAFOKRDl_f7_nft2Q52UxXFx244Gpqs7DPs";
-const chatId = "96609347";
-
-function calculateTotal() {
-    const monthlyPrice = document.getElementById('monthlyPrice').value;
-    const tireCount = document.getElementById('tireCount').value;
-    const totalPrice = monthlyPrice * tireCount;
-    document.getElementById('totalPrice').value = totalPrice;
-    generateQRCode();
+body {
+    font-family: Montserrat, sans-serif;
+    background-color: #f7f9fc;
+    margin: 0;
+    padding: 20px;
 }
 
-function generateContractNumber() {
-    const currentDate = new Date();
-    const year = currentDate.getFullYear().toString().slice(-2);
-    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-    const day = String(currentDate.getDate()).padStart(2, '0');
-    const hour = String(currentDate.getHours()).padStart(2, '0');
-    return `${year}${month}${day}${hour}`;
+.container {
+    max-width: 1080px;
+    width: 100%;
+    padding: 1em;
+    box-sizing: border-box;
+    border-radius: 10px;
+    margin: 0;
+    color: var(--text-color);
+    text-align: center;
 }
 
-// Устанавливаем текущую дату
-const today = new Date();
-const formattedDate = today.toISOString().split('T')[0];
-document.getElementById('startDate').value = formattedDate;
-
-// Подсчет дат
-function calculateDate() {
-    const tireCount = parseInt(document.getElementById('tireCount').value);
-    const startDate = new Date(document.getElementById('startDate').value);
-    const endDate = new Date(startDate);
-    endDate.setMonth(startDate.getMonth() + tireCount);
-    document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
-
-    const reminderDate = new Date(endDate);
-    reminderDate.setDate(endDate.getDate() - 7);
-    document.getElementById('reminderDate').value = reminderDate.toISOString().split('T')[0];
-    generateQRCode();
+.card-header {
+    margin-bottom: 20px;
 }
 
-// Генерация QR-кода в формате vCard
-function generateQRCode() {
-    const clientName = document.getElementById('clientName').value;
-    const phone = document.getElementById('phone').value;
-    const order = document.getElementById('order').value;
-    const monthlyPrice = document.getElementById('monthlyPrice').value;
-    const tireCount = document.getElementById('tireCount').value;
-    const hasDisk = document.getElementById('hasDisk').value;
-    const startDate = document.getElementById('startDate').value;
-    const endDate = document.getElementById('endDate').value;
-    const reminderDate = document.getElementById('reminderDate').value;
-    const storage = document.getElementById('storage').value;
-    const sezon = document.getElementById('seZon').value;
-    const totalPrice = document.getElementById('totalPrice').value;
-    const contractNumber = document.getElementById('contractNumber').value;
-    const trafficSource = document.getElementById('trafficSource').value;
-
-    // Текст для Telegram и поля NOTE в vCard
-    const noteText = `
-❱❱❱❱❱ ✅ КЛИЕНТ Otelshin.tu ✅ ❰❰❰❰❰
-
-${clientName} ${phone}
-🛞: ${tireCount}шт.❱❱${hasDisk} ❱❱ [${sezon}]
-Марка:❱❱ ${order}
-
-🗓Хранение: ❱${startDate} ➽ ${endDate}
----------------
-💳 Сумма заказа: ${totalPrice} [${monthlyPrice}мес.]
-☎️ Напоминание об окончании срока: ${reminderDate} 📞
----------------
-Договор: ${contractNumber} (на сайте Otelshin.tu) | Склад: ${storage}
-Источник трафика: ${trafficSource}
-    `;
-
-    // Формат vCard
-    const vCardData = `
-BEGIN:VCARD
-VERSION:3.0
-N:${clientName};;;;
-FN:${clientName}
-TEL:${phone}
-NOTE:${noteText.replace(/\n/g, '\\n')}  // Экранируем переносы строк
-END:VCARD
-    `.trim();
-
-    const qrCanvas = document.getElementById('qrCanvas');
-    QRCode.toCanvas(qrCanvas, vCardData, { width: 200 }, (error) => {
-        if (error) console.error(error);
-    });
-
-    // Обновляем содержимое для кнопки "Показать содержимое"
-    document.getElementById('qrContent').textContent = noteText;
+.field {
+    margin-bottom: 10px;
 }
 
-function sendToTelegram() {
-    const clientName = document.getElementById('clientName').value;
-    const phone = document.getElementById('phone').value;
-    const order = document.getElementById('order').value;
-    const monthlyPrice = document.getElementById('monthlyPrice').value;
-    const tireCount = document.getElementById('tireCount').value;
-    const hasDisk = document.getElementById('hasDisk').value;
-    const startDate = document.getElementById('startDate').value;
-    const endDate = document.getElementById('endDate').value;
-    const reminderDate = document.getElementById('reminderDate').value;
-    const storage = document.getElementById('storage').value;
-    const sezon = document.getElementById('seZon').value;
-    const totalPrice = document.getElementById('totalPrice').value;
-    const contractNumber = document.getElementById('contractNumber').value;
-    const trafficSource = document.getElementById('trafficSource').value;
-
-    const message = `
-❱❱❱❱❱ ✅ КЛИЕНТ Otelshin.tu ✅ ❰❰❰❰❰
-
-${clientName} ${phone}
-🛞: ${tireCount}шт.❱❱${hasDisk} ❱❱ [${sezon}]
-Марка:❱❱ ${order}
-
-🗓Хранение: ❱${startDate} ➽ ${endDate}
----------------
-💳 Сумма заказа: ${totalPrice} [${monthlyPrice}мес.]
-☎️ Напоминание об окончании срока: ${reminderDate} 📞
----------------
-Договор: ${contractNumber} (на сайте Otelshin.tu) | Склад: ${storage}
-Источник трафика: ${trafficSource}
-    `;
-
-    const qrCanvas = document.getElementById('qrCanvas');
-    const dataURL = qrCanvas.toDataURL('image/png');
-    sendImageWithCaption(dataURL, message);
+.field-label {
+    font-size: 14px;
+    color: #3390EC;
+    margin-bottom: 5px;
 }
 
-function sendImageWithCaption(dataURL, caption) {
-    fetch(dataURL)
-        .then(res => res.blob())
-        .then(blob => {
-            const formData = new FormData();
-            formData.append('chat_id', chatId);
-            formData.append('photo', blob, 'qrcode.png');
-            formData.append('caption', caption);
-
-            return fetch(`https://api.telegram.org/bot${telegramBotToken}/sendPhoto`, {
-                method: 'POST',
-                body: formData
-            });
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.ok) {
-                alert('QR-код с описанием успешно отправлен в Telegram!');
-            } else {
-                alert('Ошибка при отправке QR-кода с описанием в Telegram.');
-            }
-        })
-        .catch(error => {
-            console.error('Ошибка:', error);
-            alert('Произошла ошибка при отправке QR-кода с описанием в Telegram.');
-        });
+.field-value input, .field-value select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    color: #333;
 }
 
-// Инициализация
-window.onload = () => {
-    calculateDate();
-    document.getElementById('contractNumber').value = generateContractNumber();
-    generateQRCode();
+.field-value input[type="date"] {
+    font-family: Arial, sans-serif;
+}
 
-    // Обработчики для всех полей ввода
-    const inputs = document.querySelectorAll('input, select');
-    inputs.forEach(input => {
-        input.addEventListener('input', generateQRCode);
-        input.addEventListener('change', generateQRCode);
-    });
+.send-button {
+    grid-column: 1 / -1;
+    text-align: center;
+    margin-top: 20px;
+}
 
-    // Обработчик для кнопки "Показать содержимое QR-кода"
-    document.getElementById('showQrContent').addEventListener('click', () => {
-        const qrContent = document.getElementById('qrContent');
-        qrContent.style.display = qrContent.style.display === 'none' ? 'block' : 'none';
-    });
-};
+.send-button button {
+    background-color: #0D99FF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
 
-// Обработчики событий для ключевых полей
-document.getElementById('tireCount').addEventListener('input', calculateDate);
-document.getElementById('monthlyPrice').addEventListener('change', calculateTotal);
-document.getElementById('startDate').addEventListener('change', calculateDate);
+.send-button button:hover {
+    background-color: #0088cc;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+#qr-container {
+    width: 100%;
+    max-width: 200px;
+    height: 200px;
+    position: relative;
+    margin: 0 auto 10px auto;
+    border: 1px solid #ddd;
+    background-color: #fff;
+}
+
+#qrCanvas, #qr-reader {
+    width: 100%;
+    height: 100%;
+}
+
+#showQrContent, #scanQrCode {
+    background-color: #0D99FF;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 0 5px 10px 5px;
+}
+
+#showQrContent:hover, #scanQrCode:hover {
+    background-color: #0088cc;
+}
+
+#qrContent {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    text-align: left;
+}
