@@ -39,15 +39,120 @@ function calculateDate() {
 
 // Генерация QR-кода
 function generateQRCode() {
-    // ... (код остается без изменений)
+    const clientName = document.getElementById('clientName').value;
+    const phone = document.getElementById('phone').value;
+    const order = document.getElementById('order').value;
+    const monthlyPrice = document.getElementById('monthlyPrice').value;
+    const tireCount = document.getElementById('tireCount').value;
+    const hasDisk = document.getElementById('hasDisk').value;
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    const reminderDate = document.getElementById('reminderDate').value;
+    const storage = document.getElementById('storage').value;
+    const sezon = document.getElementById('seZon').value;
+    const totalPrice = document.getElementById('totalPrice').value;
+    const contractNumber = generateContractNumber();
+    const trafficSource = document.getElementById('trafficSource').value;
+
+    document.getElementById('contractNumber').value = contractNumber;
+
+    const noteText = `
+❱❱❱❱❱ ✅ КЛИЕНТ Otelshin.tu ✅ ❰❰❰❰❰
+
+${clientName} ${phone}
+🛞: ${tireCount}шт.❱❱${hasDisk} ❱❱ [${sezon}]
+Марка:❱❱ ${order}
+
+🗓Хранение: ❱${startDate} ➽ ${endDate}
+---------------
+💳 Сумма заказа: ${totalPrice} [${monthlyPrice}мес.]
+☎️ Напоминание об окончании срока: ${reminderDate} 📞
+---------------
+Договор: ${contractNumber} (на сайте Otelshin.tu) | Склад: ${storage}
+Источник трафика: ${trafficSource}
+    `;
+
+    const vCardData = `
+BEGIN:VCARD
+VERSION:3.0
+N:${clientName};;;;
+FN:${clientName}
+TEL:${phone}
+NOTE:${noteText.replace(/\n/g, '\\n')}
+END:VCARD
+    `.trim();
+
+    const qrCanvas = document.getElementById('qrCanvas');
+    QRCode.toCanvas(qrCanvas, vCardData, { width: 200 }, (error) => {
+        if (error) console.error("Ошибка генерации QR-кода:", error);
+    });
+
+    document.getElementById('qrContent').textContent = noteText;
 }
 
 function sendToTelegram() {
-    // ... (код остается без изменений)
+    const clientName = document.getElementById('clientName').value;
+    const phone = document.getElementById('phone').value;
+    const order = document.getElementById('order').value;
+    const monthlyPrice = document.getElementById('monthlyPrice').value;
+    const tireCount = document.getElementById('tireCount').value;
+    const hasDisk = document.getElementById('hasDisk').value;
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    const reminderDate = document.getElementById('reminderDate').value;
+    const storage = document.getElementById('storage').value;
+    const sezon = document.getElementById('seZon').value;
+    const totalPrice = document.getElementById('totalPrice').value;
+    const contractNumber = document.getElementById('contractNumber').value;
+    const trafficSource = document.getElementById('trafficSource').value;
+
+    const message = `
+❱❱❱❱❱ ✅ КЛИЕНТ Otelshin.tu ✅ ❰❰❰❰❰
+
+${clientName} ${phone}
+🛞: ${tireCount}шт.❱❱${hasDisk} ❱❱ [${sezon}]
+Марка:❱❱ ${order}
+
+🗓Хранение: ❱${startDate} ➽ ${endDate}
+---------------
+💳 Сумма заказа: ${totalPrice} [${monthlyPrice}мес.]
+☎️ Напоминание об окончании срока: ${reminderDate} 📞
+---------------
+Договор: ${contractNumber} (на сайте Otelshin.tu) | Склад: ${storage}
+Источник трафика: ${trafficSource}
+    `;
+
+    const qrCanvas = document.getElementById('qrCanvas');
+    const dataURL = qrCanvas.toDataURL('image/png');
+    sendImageWithCaption(dataURL, message);
 }
 
 function sendImageWithCaption(dataURL, caption) {
-    // ... (код остается без изменений)
+    fetch(dataURL)
+        .then(res => res.blob())
+        .then(blob => {
+            const formData = new FormData();
+            formData.append('chat_id', chatId);
+            formData.append('photo', blob, 'qrcode.png');
+            formData.append('caption', caption);
+
+            return fetch(`https://api.telegram.org/bot${telegramBotToken}/sendPhoto`, {
+                method: 'POST',
+                body: formData
+            });
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.ok) {
+                alert('QR-код с описанием успешно отправлен в Telegram!');
+            } else {
+                alert('Ошибка при отправке QR-кода в Telegram: ' + data.description);
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка отправки в Telegram:', error);
+            alert('Произошла ошибка при отправке QR-кода в Telegram.');
+        });
 }
 
 // Инициализация сканера QR-кода
@@ -71,11 +176,11 @@ function startQrScanner() {
     qrReader.innerHTML = '';
 
     html5QrcodeScanner = new Html5QrcodeScanner(
-        "qr-reader", 
+        "qr-reader",
         { fps: 10, qrbox: { width: 250, height: 250 } },
         /* verbose= */ false
     );
-    
+
     html5QrcodeScanner.render((decodedText, decodedResult) => {
         console.log("QR-код распознан:", decodedText);
         let decodedContent = decodedText;
@@ -90,6 +195,25 @@ function startQrScanner() {
         stopQrScanner();
     }, (error) => {
         console.warn("Ошибка сканирования:", error);
+    });
+
+    html5QrcodeScanner.start(
+        null,     // Empty prefered camera.
+        {
+            fps: 10,   // Optional frame per seconds for the scanner
+            qrbox: { width: 250, height: 250 }  // Optional if you want bounded box UI
+        },
+        (decodedText, decodedResult) => {
+            // handle success condition with the decodedText or result.
+            console.log(`QR code matched = ${decodedText}`, decodedResult);
+        },
+        (errorMessage) => {
+            // parse error, ideally ignore it.
+            console.log(`QR code scan error = ${errorMessage}`)
+        })
+    .catch((err) => {
+      // Start failed, handle it.
+      console.log(`QR code scan error = ${err}`)
     });
 }
 
