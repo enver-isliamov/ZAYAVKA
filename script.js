@@ -165,7 +165,7 @@ function startQrScanner() {
     html5QrcodeScanner = new Html5Qrcode("qr-reader");
     html5QrcodeScanner.start(
         { facingMode: "environment" }, // Задняя камера
-        { fps: 10, qrbox: { width: 150, height: 150 } }, // Настройки сканирования
+        { fps: 10, qrbox: { width: 200, height: 200 } }, // Настройки сканирования
         (decodedText) => {
             // Отображаем содержимое любого QR-кода
             let decodedContent = decodedText;
