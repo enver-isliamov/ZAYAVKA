@@ -83,7 +83,10 @@ END:VCARD
     `.trim();
 
     const qrCanvas = document.getElementById('qrCanvas');
-    QRCode.toCanvas(qrCanvas, vCardData, { width: 200 }, (error) => {
+    qrCanvas.width = 300;  // Устанавливаем ширину канваса
+    qrCanvas.height = 300; // Устанавливаем высоту канваса
+
+    QRCode.toCanvas(qrCanvas, vCardData, { width: 300 }, (error) => {
         if (error) console.error("Ошибка генерации QR-кода:", error);
     });
 
@@ -91,7 +94,7 @@ END:VCARD
 }
 
 function sendToTelegram() {
-    const clientName = document.getElementById('clientName').value;
+     const clientName = document.getElementById('clientName').value;
     const phone = document.getElementById('phone').value;
     const order = document.getElementById('order').value;
     const monthlyPrice = document.getElementById('monthlyPrice').value;
@@ -121,10 +124,21 @@ ${clientName} ${phone}
 Договор: ${contractNumber} (на сайте Otelshin.tu) | Склад: ${storage}
 Источник трафика: ${trafficSource}
     `;
+  
+    // Создаем временный canvas для QR-кода большего размера
+    const tempQrCanvas = document.createElement('canvas');
+    tempQrCanvas.width = 500;
+    tempQrCanvas.height = 500;
 
-    const qrCanvas = document.getElementById('qrCanvas');
-    const dataURL = qrCanvas.toDataURL('image/png');
-    sendImageWithCaption(dataURL, message);
+    QRCode.toCanvas(tempQrCanvas, vCardData, { width: 500 }, (error) => {
+        if (error) {
+            console.error("Ошибка генерации QR-кода:", error);
+            return;
+        }
+
+        const dataURL = tempQrCanvas.toDataURL('image/png');
+        sendImageWithCaption(dataURL, message);
+    });
 }
 
 function sendImageWithCaption(dataURL, caption) {
