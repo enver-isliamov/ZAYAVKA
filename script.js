@@ -83,7 +83,7 @@ END:VCARD
     `.trim();
 
     const qrCanvas = document.getElementById('qrCanvas');
-    QRCode.toCanvas(qrCanvas, vCardData, { width: 300 }, (error) => {
+    QRCode.toCanvas(qrCanvas, vCardData, { width: 200 }, (error) => {
         if (error) console.error("Ошибка генерации QR-кода:", error);
     });
 
@@ -174,13 +174,13 @@ function startQrScanner() {
 
     html5QrcodeScanner = new Html5Qrcode("qr-reader");
 
-    // Проверяем доступные камеры
     Html5Qrcode.getCameras().then(cameras => {
         if (cameras && cameras.length > 0) {
             console.log("Найдено камер:", cameras.length);
+            const cameraId = cameras[0].id; // Используем первую доступную камеру
             html5QrcodeScanner.start(
-                { facingMode: "environment" }, // Предпочитаем заднюю камеру
-                { fps: 10, qrbox: { width: 200, height: 200 } },
+                cameraId, // Явно указываем ID камеры
+                { fps: 10, qrbox: { width: 150, height: 150 } }, // Уменьшаем область сканирования
                 (decodedText) => {
                     console.log("QR-код распознан:", decodedText);
                     let decodedContent = decodedText;
