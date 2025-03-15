@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -9,10 +8,13 @@
 </head>
 <body>
   <div class="container">
-    <div id="signature-pad">
-    <canvas id="canvas"></canvas>
-</div>
-      <button id="clear">Очистить</button>
+    <div id="qr-code">
+        <canvas id="qrCanvas"></canvas>
+    </div>
+    <button id="showQrContent">Показать содержимое QR-кода</button>
+    <button id="scanQrCode">Сканировать</button>
+    <div id="qr-reader" style="display: none; width: 200px; height: 200px; margin: 10px auto;"></div>
+    <div id="qrContent" style="display: none; white-space: pre-wrap; margin-top: 10px;"></div>
     <div class="card">
         <div class="card-header">
             <div class="field">
@@ -23,7 +25,6 @@
                 <div class="field-label">Телефон</div>
                 <div class="field-value"><input type="tel" id="phone" placeholder="+7 (978)-xxx-xx-xx"></div>
             </div>
-          
             <div class="field">
                 <div class="field-label">Марка ➽ Размер ➽ Состояние</div>
                 <div class="field-value"><input type="text" id="order" placeholder="Pirelli Scorpion 255/55/R16 состояние"></div>
@@ -76,8 +77,6 @@
                     </select>
                 </div>
             </div>
-
-
             <div class="field">
                 <div class="field-label">Начало</div>
                 <div class="field-value"><input type="date" id="startDate" value="2024-06-29"></div>
@@ -106,16 +105,15 @@
                 <div class="field-label">Источник трафика</div>
                 <div class="field-value"><input type="text" id="trafficSource" value="❰AVITO❱"></div>
             </div>
-          
-                    
             <div class="send-button">
                <button onclick="window.location.href='https://otelshin.ru/'">Сайт</button>
-                <button onclick="sendToTelegram()">Отправить в Telegram</button>
+               <button onclick="sendToTelegram()">Отправить в Telegram</button>
             </div>
         </div>
     </div>
-    </div>
-    <script src="script.js"></script>
-<script src="https://apis.google.com/js/api.js"></script>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
