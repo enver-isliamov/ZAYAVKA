@@ -8,12 +8,12 @@
 </head>
 <body>
   <div class="container">
-    <div id="qr-code">
-        <canvas id="qrCanvas"></canvas>
+    <div id="qr-container">
+        <canvas id="qrCanvas" style="display: block;"></canvas>
+        <div id="qr-reader" style="display: none; width: 200px; height: 200px;"></div>
     </div>
     <button id="showQrContent">Показать содержимое QR-кода</button>
     <button id="scanQrCode">Сканировать</button>
-    <div id="qr-reader" style="display: none; width: 200px; height: 200px; margin: 10px auto;"></div>
     <div id="qrContent" style="display: none; white-space: pre-wrap; margin-top: 10px;"></div>
     <div class="card">
         <div class="card-header">
