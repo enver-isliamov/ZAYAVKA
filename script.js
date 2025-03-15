@@ -81,7 +81,7 @@ END:VCARD
     `.trim();
 
     const qrCanvas = document.getElementById('qrCanvas');
-    QRCode.toCanvas(qrCanvas, vCardData, { width: 200 }, (error) => {
+    QRCode.toCanvas(qrCanvas, vCardData, { width: 300 }, (error) => {
         if (error) console.error(error);
     });
 
@@ -165,7 +165,7 @@ function startQrScanner() {
     html5QrcodeScanner = new Html5Qrcode("qr-reader");
     html5QrcodeScanner.start(
         { facingMode: "environment" }, // Задняя камера
-        { fps: 10, qrbox: { width: 200, height: 200 } }, // Настройки сканирования
+        { fps: 10, qrbox: { width: 250, height: 250 } }, // Увеличенная область сканирования 1:1
         (decodedText) => {
             // Отображаем содержимое любого QR-кода
             let decodedContent = decodedText;
@@ -230,6 +230,10 @@ window.onload = () => {
         } else {
             stopQrScanner();
         }
+    });
+
+    document.getElementById('closeScanner').addEventListener('click', () => {
+        stopQrScanner();
     });
 };
 
