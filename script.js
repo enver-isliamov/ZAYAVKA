@@ -196,25 +196,6 @@ function startQrScanner() {
     }, (error) => {
         console.warn("Ошибка сканирования:", error);
     });
-
-    html5QrcodeScanner.start(
-        null,     // Empty prefered camera.
-        {
-            fps: 10,   // Optional frame per seconds for the scanner
-            qrbox: { width: 250, height: 250 }  // Optional if you want bounded box UI
-        },
-        (decodedText, decodedResult) => {
-            // handle success condition with the decodedText or result.
-            console.log(`QR code matched = ${decodedText}`, decodedResult);
-        },
-        (errorMessage) => {
-            // parse error, ideally ignore it.
-            console.log(`QR code scan error = ${errorMessage}`)
-        })
-    .catch((err) => {
-      // Start failed, handle it.
-      console.log(`QR code scan error = ${err}`)
-    });
 }
 
 function stopQrScanner() {
