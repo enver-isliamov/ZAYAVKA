@@ -10,12 +10,8 @@
   <div class="container">
     <div id="qr-container">
         <canvas id="qrCanvas" style="display: block;"></canvas>
-        <div id="qr-reader" style="display: none; width: 200px; height: 200px; position: relative;">
-            <button id="closeScanner" style="position: absolute; top: 10px; right: 10px; padding: 5px 10px; background-color: #ff4444; color: white; border: none; border-radius: 4px; cursor: pointer;">Закрыть</button>
-        </div>
     </div>
     <button id="showQrContent">Показать содержимое QR-кода</button>
-    <button id="scanQrCode">Сканировать</button>
     <div id="qrContent" style="display: none; white-space: pre-wrap; margin-top: 10px;"></div>
     <div class="card">
         <div class="card-header">
@@ -115,7 +111,6 @@
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
-  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
