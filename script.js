@@ -74,7 +74,7 @@ function sendToTelegram() {
 ❱❱❱❱❱ ✅ КЛИЕНТ Otelshin.tu ✅ ❰❰❰❰❰
 
 ${clientName} ${phone}
-🛞: ${tireCount}шт.❱❱${hasDisk} ❱❱ [${sezon}]
+🛞: ${tireCount}мес.❱❱${hasDisk} ❱❱ [${sezon}]
 Марка:❱❱ ${order}
 
 🗓Хранение: ❱${startDate} ➽ ${endDate}
