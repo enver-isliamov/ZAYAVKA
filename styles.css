@@ -13,21 +13,23 @@ body {
     border-radius: 10px;
     margin: 0;
     color: var(--text-color);
-    text-align: center; /* Выровнять текст по центру */
-
+    text-align: center;
 }
 
 .card-header {
     margin-bottom: 20px;
 }
+
 .field {
     margin-bottom: 10px;
 }
+
 .field-label {
     font-size: 14px;
     color: #3390EC;
     margin-bottom: 5px;
 }
+
 .field-value input, .field-value select {
     width: 100%;
     padding: 8px;
@@ -36,16 +38,19 @@ body {
     font-size: 16px;
     color: #333;
 }
+
 .field-value input[type="date"] {
     font-family: Arial, sans-serif;
 }
+
 .send-button {
     grid-column: 1 / -1;
     text-align: center;
     margin-top: 20px;
 }
+
 .send-button button {
-    background-color: #0D99FF;;
+    background-color: #0D99FF;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -54,42 +59,60 @@ body {
     cursor: pointer;
     transition: background-color 0.3s;
 }
+
 .send-button button:hover {
     background-color: #0088cc;
 }
+
 .grid-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 15px;
 }
+
 .full-width {
     grid-column: 1 / -1;
 }
 
-  #signature-pad {
-            border: 1px solid #ddd;
-     background-color: #f7f9fc;
-            width: 100%;
-            height: 150px;
-            position: relative;
-            margin-bottom: 10px; /* Отступ снизу для кнопки */
-      position: sticky; /* Липкое положение */
-    top: 0; /* Начинает фиксироваться при достижении верхней части окна */
-    z-index: 1000; /* Для видимости над другими элементами */
-        }
+#qr-code {
+    border: 1px solid #ddd;
+    background-color: #fff;
+    width: 100%;
+    max-width: 200px;
+    height: 200px;
+    position: relative;
+    margin: 0 auto 10px auto;
+}
 
-        canvas {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            border: none; /* Убираем границу у canvas */
-        }
+#qrCanvas {
+    width: 100%;
+    height: 100%;
+}
 
-        #clear {
-            padding: 5px 10px; /* Уменьшенный размер кнопки */
-            font-size: 14px; /* Размер шрифта */
-            cursor: pointer; /* Курсор при наведении */
-            grid-column: 1 / -1;
-        }
+#showQrContent, #scanQrCode {
+    background-color: #0D99FF;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 0 5px 10px 5px;
+}
+
+#showQrContent:hover, #scanQrCode:hover {
+    background-color: #0088cc;
+}
+
+#qrContent {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    text-align: left;
+}
+
+#qr-reader {
+    border: 1px solid #ddd;
+}
