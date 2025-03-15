@@ -172,44 +172,36 @@ function startQrScanner() {
     qrReader.style.display = 'block';
     console.log("Запуск сканера...");
 
+    // Очищаем содержимое qr-reader перед запуском
+    while (qrReader.firstChild) {
+        qrReader.removeChild(qrReader.firstChild);
+    }
+
     html5QrcodeScanner = new Html5Qrcode("qr-reader");
 
-    Html5Qrcode.getCameras().then(cameras => {
-        if (cameras && cameras.length > 0) {
-            console.log("Найдено камер:", cameras.length);
-            const cameraId = cameras[0].id; // Используем первую доступную камеру
-            html5QrcodeScanner.start(
-                cameraId, // Явно указываем ID камеры
-                { fps: 10, qrbox: { width: 150, height: 150 } }, // Уменьшаем область сканирования
-                (decodedText) => {
-                    console.log("QR-код распознан:", decodedText);
-                    let decodedContent = decodedText;
-                    if (decodedText.includes('BEGIN:VCARD')) {
-                        const noteMatch = decodedText.match(/NOTE:(.+?)(?=END:VCARD|\n[A-Z]+:|$)/s);
-                        if (noteMatch && noteMatch[1]) {
-                            decodedContent = noteMatch[1].replace(/\\n/g, '\n');
-                        }
-                    }
-                    document.getElementById('qrContent').textContent = decodedContent;
-                    document.getElementById('qrContent').style.display = 'block';
-                    stopQrScanner();
-                },
-                (error) => {
-                    console.warn("Ошибка сканирования:", error);
+    // Упрощённый запуск сканера без предварительной проверки камер
+    html5QrcodeScanner.start(
+        { facingMode: "environment" }, // Предпочитаем заднюю камеру
+        { fps: 10, qrbox: { width: 150, height: 150 } }, // Упрощённая конфигурация
+        (decodedText) => {
+            console.log("QR-код распознан:", decodedText);
+            let decodedContent = decodedText;
+            if (decodedText.includes('BEGIN:VCARD')) {
+                const noteMatch = decodedText.match(/NOTE:(.+?)(?=END:VCARD|\n[A-Z]+:|$)/s);
+                if (noteMatch && noteMatch[1]) {
+                    decodedContent = noteMatch[1].replace(/\\n/g, '\n');
                 }
-            ).catch(err => {
-                console.error("Ошибка запуска сканера:", err);
-                alert("Не удалось запустить сканер: " + err);
-                stopQrScanner();
-            });
-        } else {
-            console.error("Камеры не найдены");
-            alert("На устройстве не найдено камер.");
+            }
+            document.getElementById('qrContent').textContent = decodedContent;
+            document.getElementById('qrContent').style.display = 'block';
             stopQrScanner();
+        },
+        (error) => {
+            console.warn("Ошибка сканирования:", error);
         }
-    }).catch(err => {
-        console.error("Ошибка получения доступа к камерам:", err);
-        alert("Ошибка доступа к камере: " + err);
+    ).catch(err => {
+        console.error("Ошибка запуска сканера:", err);
+        alert("Не удалось запустить сканер: " + err);
         stopQrScanner();
     });
 }
