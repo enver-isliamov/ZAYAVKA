@@ -94,7 +94,7 @@ END:VCARD
 }
 
 function sendToTelegram() {
-     const clientName = document.getElementById('clientName').value;
+    const clientName = document.getElementById('clientName').value;
     const phone = document.getElementById('phone').value;
     const order = document.getElementById('order').value;
     const monthlyPrice = document.getElementById('monthlyPrice').value;
@@ -124,11 +124,21 @@ ${clientName} ${phone}
 Договор: ${contractNumber} (на сайте Otelshin.tu) | Склад: ${storage}
 Источник трафика: ${trafficSource}
     `;
-  
+
     // Создаем временный canvas для QR-кода большего размера
     const tempQrCanvas = document.createElement('canvas');
     tempQrCanvas.width = 500;
     tempQrCanvas.height = 500;
+
+    const vCardData = `
+BEGIN:VCARD
+VERSION:3.0
+N:${clientName};;;;
+FN:${clientName}
+TEL:${phone}
+NOTE:${message.replace(/\n/g, '\\n')}
+END:VCARD
+    `.trim();
 
     QRCode.toCanvas(tempQrCanvas, vCardData, { width: 500 }, (error) => {
         if (error) {
@@ -149,6 +159,7 @@ function sendImageWithCaption(dataURL, caption) {
             formData.append('chat_id', chatId);
             formData.append('photo', blob, 'qrcode.png');
             formData.append('caption', caption);
+            formData.append('caption', caption); // add caption here
 
             return fetch(`https://api.telegram.org/bot${telegramBotToken}/sendPhoto`, {
                 method: 'POST',
