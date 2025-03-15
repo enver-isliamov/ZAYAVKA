@@ -74,7 +74,7 @@ body {
     grid-column: 1 / -1;
 }
 
-/* Стили для QR-кода и сканера */
+/* Стили для QR-кода */
 #qr-container {
     width: 100%;
     max-width: 300px; /* Увеличено для лучшего отображения */
@@ -91,22 +91,7 @@ body {
     height: auto;
 }
 
-#qr-reader {
-    width: 100%;
-    max-width: 300px;
-    height: auto;
-    position: relative;
-    margin: 0 auto;
-}
-
-/* Важно: стили для видеопотока */
-#qr-reader video {
-    width: 100% !important;
-    height: auto !important;
-    position: static !important; /* Убираем абсолютное позиционирование */
-}
-
-#showQrContent, #scanQrCode {
+#showQrContent {
     background-color: #0D99FF;
     color: white;
     border: none;
@@ -117,7 +102,7 @@ body {
     margin: 0 5px 10px 5px;
 }
 
-#showQrContent:hover, #scanQrCode:hover {
+#showQrContent:hover {
     background-color: #0088cc;
 }
 
@@ -128,8 +113,4 @@ body {
     border-radius: 4px;
     font-size: 14px;
     text-align: left;
-}
-
-#closeScanner:hover {
-    background-color: #cc0000;
 }
