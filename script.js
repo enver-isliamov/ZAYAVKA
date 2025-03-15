@@ -6,6 +6,7 @@ function calculateTotal() {
     const tireCount = document.getElementById('tireCount').value;
     const totalPrice = monthlyPrice * tireCount;
     document.getElementById('totalPrice').value = totalPrice;
+    generateQRCode();
 }
 
 function generateContractNumber() {
@@ -14,40 +15,81 @@ function generateContractNumber() {
     const month = String(currentDate.getMonth() + 1).padStart(2, '0');
     const day = String(currentDate.getDate()).padStart(2, '0');
     const hour = String(currentDate.getHours()).padStart(2, '0');
-    const contractNumber = `${year}${month}${day}${hour}`;
-    return contractNumber;
+    return `${year}${month}${day}${hour}`;
 }
 
-// Получаем текущую дату
+// Устанавливаем текущую дату
 const today = new Date();
-// Форматируем дату в формате YYYY-MM-DD
 const formattedDate = today.toISOString().split('T')[0];
-// Устанавливаем значение в input
 document.getElementById('startDate').value = formattedDate;
 
-//***** ПОДСЧЕТ ДАТ ***** //
+// Подсчет дат
 function calculateDate() {
-    // Получаем выбранное количество месяцев
     const tireCount = parseInt(document.getElementById('tireCount').value);
-    // Получаем дату начала
     const startDate = new Date(document.getElementById('startDate').value);
-    // Увеличиваем дату начала на количество месяцев
     const endDate = new Date(startDate);
     endDate.setMonth(startDate.getMonth() + tireCount);
-    // Устанавливаем значение в поле "Дата окончания"
     document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
 
-    // Устанавливаем дату напоминания на 7 дней раньше "Дата окончания"
     const reminderDate = new Date(endDate);
     reminderDate.setDate(endDate.getDate() - 7);
     document.getElementById('reminderDate').value = reminderDate.toISOString().split('T')[0];
+    generateQRCode();
 }
 
-// Вызываем функцию при загрузке страницы для инициализации значений
-window.onload = calculateDate;
+// Генерация QR-кода в формате vCard
+function generateQRCode() {
+    const clientName = document.getElementById('clientName').value;
+    const phone = document.getElementById('phone').value;
+    const order = document.getElementById('order').value;
+    const monthlyPrice = document.getElementById('monthlyPrice').value;
+    const tireCount = document.getElementById('tireCount').value;
+    const hasDisk = document.getElementById('hasDisk').value;
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    const reminderDate = document.getElementById('reminderDate').value;
+    const storage = document.getElementById('storage').value;
+    const sezon = document.getElementById('seZon').value;
+    const totalPrice = document.getElementById('totalPrice').value;
+    const contractNumber = document.getElementById('contractNumber').value;
+    const trafficSource = document.getElementById('trafficSource').value;
 
-// Добавляем обработчик события input для tireCount
-document.getElementById('tireCount').addEventListener('input', calculateDate);
+    // Текст для Telegram и поля NOTE в vCard
+    const noteText = `
+❱❱❱❱❱ ✅ КЛИЕНТ Otelshin.tu ✅ ❰❰❰❰❰
+
+${clientName} ${phone}
+🛞: ${tireCount}шт.❱❱${hasDisk} ❱❱ [${sezon}]
+Марка:❱❱ ${order}
+
+🗓Хранение: ❱${startDate} ➽ ${endDate}
+---------------
+💳 Сумма заказа: ${totalPrice} [${monthlyPrice}мес.]
+☎️ Напоминание об окончании срока: ${reminderDate} 📞
+---------------
+Договор: ${contractNumber} (на сайте Otelshin.tu) | Склад: ${storage}
+Источник трафика: ${trafficSource}
+    `;
+
+    // Формат vCard
+    const vCardData = `
+BEGIN:VCARD
+VERSION:3.0
+N:${clientName};;;;
+FN:${clientName}
+TEL:${phone}
+NOTE:${noteText.replace(/\n/g, '\\n')}  // Экранируем переносы строк
+END:VCARD
+    `.trim();
+
+    const qrCanvas = document.getElementById('qrCanvas');
+    QRCode.toCanvas(qrCanvas, vCardData, { width: 200 }, (error) => {
+        if (error) console.error(error);
+    });
+
+    // Обновляем содержимое для кнопки "Показать содержимое"
+    document.getElementById('qrContent').textContent = noteText;
+}
 
 function sendToTelegram() {
     const clientName = document.getElementById('clientName').value;
@@ -65,16 +107,11 @@ function sendToTelegram() {
     const contractNumber = document.getElementById('contractNumber').value;
     const trafficSource = document.getElementById('trafficSource').value;
 
-    // Получаем изображение из canvas
-    const canvas = document.getElementById('canvas');
-    const dataURL = canvas.toDataURL('image/png');
-
-    // Формируем сообщение
     const message = `
 ❱❱❱❱❱ ✅ КЛИЕНТ Otelshin.tu ✅ ❰❰❰❰❰
 
 ${clientName} ${phone}
-🛞: ${tireCount}мес.❱❱${hasDisk} ❱❱ [${sezon}]
+🛞: ${tireCount}шт.❱❱${hasDisk} ❱❱ [${sezon}]
 Марка:❱❱ ${order}
 
 🗓Хранение: ❱${startDate} ➽ ${endDate}
@@ -86,19 +123,19 @@ ${clientName} ${phone}
 Источник трафика: ${trafficSource}
     `;
 
-    // Отправляем изображение с текстом в качестве описания
+    const qrCanvas = document.getElementById('qrCanvas');
+    const dataURL = qrCanvas.toDataURL('image/png');
     sendImageWithCaption(dataURL, message);
 }
 
 function sendImageWithCaption(dataURL, caption) {
-    // Преобразуем изображение в Blob
     fetch(dataURL)
         .then(res => res.blob())
         .then(blob => {
             const formData = new FormData();
             formData.append('chat_id', chatId);
-            formData.append('photo', blob, 'signature.png');
-            formData.append('caption', caption); // Добавляем текст в качестве описания
+            formData.append('photo', blob, 'qrcode.png');
+            formData.append('caption', caption);
 
             return fetch(`https://api.telegram.org/bot${telegramBotToken}/sendPhoto`, {
                 method: 'POST',
@@ -108,88 +145,38 @@ function sendImageWithCaption(dataURL, caption) {
         .then(response => response.json())
         .then(data => {
             if (data.ok) {
-                alert('Изображение с описанием успешно отправлено в Telegram!');
+                alert('QR-код с описанием успешно отправлен в Telegram!');
             } else {
-                alert('Ошибка при отправке изображения с описанием в Telegram.');
+                alert('Ошибка при отправке QR-кода с описанием в Telegram.');
             }
         })
         .catch(error => {
             console.error('Ошибка:', error);
-            alert('Произошла ошибка при отправке изображения с описанием в Telegram.');
+            alert('Произошла ошибка при отправке QR-кода с описанием в Telegram.');
         });
 }
 
-// Отправка копии на номер телефона
-const phoneNumber = document.getElementById('phone').value;
-const smsMessage = `
-Уважаемый ${clientName}, Ваши данные были отправлены в Telegram:
-Заказ: ${order}
-Цена за месяц: ${monthlyPrice}
-Кол-во шин: ${tireCount}
-Сумма заказа: ${totalPrice}
-`;
-// Здесь нужно реализовать логику отправки SMS-сообщения на указанный номер
-console.log(`SMS-сообщение отправлено на номер ${phoneNumber}: ${smsMessage}`);
+// Инициализация
+window.onload = () => {
+    calculateDate();
+    document.getElementById('contractNumber').value = generateContractNumber();
+    generateQRCode();
 
-// Генерируем номер договора при загрузке страницы
-document.getElementById('contractNumber').value = generateContractNumber();
+    // Обработчики для всех полей ввода
+    const inputs = document.querySelectorAll('input, select');
+    inputs.forEach(input => {
+        input.addEventListener('input', generateQRCode);
+        input.addEventListener('change', generateQRCode);
+    });
 
-//ПОДПИСЬ ///////////////
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-let drawing = false;
+    // Обработчик для кнопки "Показать содержимое QR-кода"
+    document.getElementById('showQrContent').addEventListener('click', () => {
+        const qrContent = document.getElementById('qrContent');
+        qrContent.style.display = qrContent.style.display === 'none' ? 'block' : 'none';
+    });
+};
 
-// Устанавливаем размеры canvas
-canvas.width = document.getElementById('signature-pad').clientWidth;
-canvas.height = document.getElementById('signature-pad').clientHeight;
-
-// Настройка стилей рисования
-ctx.strokeStyle = "#000"; // Цвет линии
-ctx.lineWidth = 2; // Ширина линии
-
-// Начало рисования
-function startDrawing(e) {
-    drawing = true;
-    ctx.beginPath();
-    ctx.moveTo(getX(e), getY(e));
-}
-
-// Рисование
-function draw(e) {
-    if (drawing) {
-        ctx.lineTo(getX(e), getY(e));
-        ctx.stroke();
-    }
-}
-
-// Окончание рисования
-function stopDrawing() {
-    drawing = false;
-    ctx.closePath();
-}
-
-// Получение координат X
-function getX(e) {
-    return e.offsetX !== undefined ? e.offsetX : e.touches[0].clientX - canvas.getBoundingClientRect().left;
-}
-
-// Получение координат Y
-function getY(e) {
-    return e.offsetY !== undefined ? e.offsetY : e.touches[0].clientY - canvas.getBoundingClientRect().top;
-}
-
-// Обработчики событий мыши
-canvas.addEventListener('mousedown', startDrawing);
-canvas.addEventListener('mousemove', draw);
-canvas.addEventListener('mouseup', stopDrawing);
-
-// Обработчики событий касания для мобильных устройств
-canvas.addEventListener('touchstart', startDrawing);
-canvas.addEventListener('touchmove', draw);
-canvas.addEventListener('touchend', stopDrawing);
-
-// Очистка canvas
-document.getElementById('clear').addEventListener('click', () => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-});
-//ПОДПИСЬ <-- ///////////////
+// Обработчики событий для ключевых полей
+document.getElementById('tireCount').addEventListener('input', calculateDate);
+document.getElementById('monthlyPrice').addEventListener('change', calculateTotal);
+document.getElementById('startDate').addEventListener('change', calculateDate);
