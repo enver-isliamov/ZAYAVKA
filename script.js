@@ -1,6 +1,7 @@
 const telegramBotToken = "7134836219:AAFOKRDl_f7_nft2Q52UxXFx244Gpqs7DPs";
 const chatId = "96609347";
 
+// Функция для расчета общей стоимости
 function calculateTotal() {
     const monthlyPrice = document.getElementById('monthlyPrice').value;
     const tireCount = document.getElementById('tireCount').value;
@@ -9,6 +10,7 @@ function calculateTotal() {
     generateQRCode();
 }
 
+// Функция для генерации номера договора
 function generateContractNumber() {
     const currentDate = new Date();
     const year = currentDate.getFullYear().toString().slice(-2);
@@ -23,7 +25,7 @@ const today = new Date();
 const formattedDate = today.toISOString().split('T')[0];
 document.getElementById('startDate').value = formattedDate;
 
-// Подсчет дат
+// Функция для расчета дат
 function calculateDate() {
     const tireCount = parseInt(document.getElementById('tireCount').value);
     const startDate = new Date(document.getElementById('startDate').value);
@@ -37,7 +39,7 @@ function calculateDate() {
     generateQRCode();
 }
 
-// Генерация QR-кода
+// Функция для генерации QR-кода
 function generateQRCode() {
     const clientName = document.getElementById('clientName').value;
     const phone = document.getElementById('phone').value;
@@ -93,6 +95,7 @@ END:VCARD
     document.getElementById('qrContent').textContent = noteText;
 }
 
+// Функция для отправки данных в Telegram
 function sendToTelegram() {
     const clientName = document.getElementById('clientName').value;
     const phone = document.getElementById('phone').value;
@@ -151,6 +154,7 @@ END:VCARD
     });
 }
 
+// Функция для отправки изображения с подписью в Telegram
 function sendImageWithCaption(dataURL, caption) {
     fetch(dataURL)
         .then(res => res.blob())
@@ -159,7 +163,6 @@ function sendImageWithCaption(dataURL, caption) {
             formData.append('chat_id', chatId);
             formData.append('photo', blob, 'qrcode.png');
             formData.append('caption', caption);
-            formData.append('caption', caption); // add caption here
 
             return fetch(`https://api.telegram.org/bot${telegramBotToken}/sendPhoto`, {
                 method: 'POST',
@@ -180,7 +183,7 @@ function sendImageWithCaption(dataURL, caption) {
         });
 }
 
-// Инициализация
+// Инициализация при загрузке страницы
 window.onload = () => {
     calculateDate();
     generateQRCode();
@@ -197,6 +200,7 @@ window.onload = () => {
     });
 };
 
+// Добавляем обработчики событий
 document.getElementById('tireCount').addEventListener('input', calculateDate);
 document.getElementById('monthlyPrice').addEventListener('change', calculateTotal);
 document.getElementById('startDate').addEventListener('change', calculateDate);
