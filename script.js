@@ -11,10 +11,10 @@ function calculateTotal() {
 
 function generateContractNumber() {
     const currentDate = new Date();
-    const year = currentDate.getFullYear().toString().slice(-2); // Последние 2 цифры года
-    const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Месяц (01-12)
-    const day = String(currentDate.getDate()).padStart(2, '0'); // День (01-31)
-    const hour = String(currentDate.getHours()).padStart(2, '0'); // Часы (00-23)
+    const year = currentDate.getFullYear().toString().slice(-2);
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    const hour = String(currentDate.getHours()).padStart(2, '0');
     return `${year}${month}${day}${hour}`;
 }
 
@@ -37,7 +37,7 @@ function calculateDate() {
     generateQRCode();
 }
 
-// Генерация QR-кода в формате vCard с динамическим номером договора
+// Генерация QR-кода
 function generateQRCode() {
     const clientName = document.getElementById('clientName').value;
     const phone = document.getElementById('phone').value;
@@ -51,10 +51,10 @@ function generateQRCode() {
     const storage = document.getElementById('storage').value;
     const sezon = document.getElementById('seZon').value;
     const totalPrice = document.getElementById('totalPrice').value;
-    const contractNumber = generateContractNumber(); // Генерируем номер договора заново
+    const contractNumber = generateContractNumber();
     const trafficSource = document.getElementById('trafficSource').value;
 
-    document.getElementById('contractNumber').value = contractNumber; // Обновляем поле договора
+    document.getElementById('contractNumber').value = contractNumber;
 
     const noteText = `
 ❱❱❱❱❱ ✅ КЛИЕНТ Otelshin.tu ✅ ❰❰❰❰❰
@@ -84,7 +84,7 @@ END:VCARD
 
     const qrCanvas = document.getElementById('qrCanvas');
     QRCode.toCanvas(qrCanvas, vCardData, { width: 300 }, (error) => {
-        if (error) console.error(error);
+        if (error) console.error("Ошибка генерации QR-кода:", error);
     });
 
     document.getElementById('qrContent').textContent = noteText;
@@ -146,12 +146,12 @@ function sendImageWithCaption(dataURL, caption) {
             if (data.ok) {
                 alert('QR-код с описанием успешно отправлен в Telegram!');
             } else {
-                alert('Ошибка при отправке QR-кода с описанием в Telegram.');
+                alert('Ошибка при отправке QR-кода в Telegram: ' + data.description);
             }
         })
         .catch(error => {
-            console.error('Ошибка:', error);
-            alert('Произошла ошибка при отправке QR-кода с описанием в Telegram.');
+            console.error('Ошибка отправки в Telegram:', error);
+            alert('Произошла ошибка при отправке QR-кода в Telegram.');
         });
 }
 
@@ -161,53 +161,85 @@ let html5QrcodeScanner;
 function startQrScanner() {
     const qrCanvas = document.getElementById('qrCanvas');
     const qrReader = document.getElementById('qr-reader');
+
+    if (!qrCanvas || !qrReader) {
+        console.error("Элементы qrCanvas или qrReader не найдены в DOM");
+        alert("Ошибка: не найдены элементы для QR-кода или сканера.");
+        return;
+    }
+
     qrCanvas.style.display = 'none';
     qrReader.style.display = 'block';
+    console.log("Запуск сканера...");
 
     html5QrcodeScanner = new Html5Qrcode("qr-reader");
-    html5QrcodeScanner.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        (decodedText) => {
-            let decodedContent = decodedText;
-            if (decodedText.includes('BEGIN:VCARD')) {
-                const noteMatch = decodedText.match(/NOTE:(.+?)(?=END:VCARD|\n[A-Z]+:|$)/s);
-                if (noteMatch && noteMatch[1]) {
-                    decodedContent = noteMatch[1].replace(/\\n/g, '\n');
+
+    // Проверяем доступные камеры
+    Html5Qrcode.getCameras().then(cameras => {
+        if (cameras && cameras.length > 0) {
+            console.log("Найдено камер:", cameras.length);
+            html5QrcodeScanner.start(
+                { facingMode: "environment" }, // Предпочитаем заднюю камеру
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                (decodedText) => {
+                    console.log("QR-код распознан:", decodedText);
+                    let decodedContent = decodedText;
+                    if (decodedText.includes('BEGIN:VCARD')) {
+                        const noteMatch = decodedText.match(/NOTE:(.+?)(?=END:VCARD|\n[A-Z]+:|$)/s);
+                        if (noteMatch && noteMatch[1]) {
+                            decodedContent = noteMatch[1].replace(/\\n/g, '\n');
+                        }
+                    }
+                    document.getElementById('qrContent').textContent = decodedContent;
+                    document.getElementById('qrContent').style.display = 'block';
+                    stopQrScanner();
+                },
+                (error) => {
+                    console.warn("Ошибка сканирования:", error);
                 }
-            }
-            document.getElementById('qrContent').textContent = decodedContent;
-            document.getElementById('qrContent').style.display = 'block';
+            ).catch(err => {
+                console.error("Ошибка запуска сканера:", err);
+                alert("Не удалось запустить сканер: " + err);
+                stopQrScanner();
+            });
+        } else {
+            console.error("Камеры не найдены");
+            alert("На устройстве не найдено камер.");
             stopQrScanner();
-        },
-        (error) => {
-            console.warn(`Ошибка сканирования: ${error}`);
         }
-    ).catch((err) => {
-        console.error(`Не удалось запустить сканер: ${err}`);
-        alert('Ошибка запуска камеры. Убедитесь, что разрешён доступ к камере.');
+    }).catch(err => {
+        console.error("Ошибка получения доступа к камерам:", err);
+        alert("Ошибка доступа к камере: " + err);
+        stopQrScanner();
     });
 }
 
 function stopQrScanner() {
     if (html5QrcodeScanner) {
         html5QrcodeScanner.stop().then(() => {
+            console.log("Сканер остановлен");
             const qrCanvas = document.getElementById('qrCanvas');
             const qrReader = document.getElementById('qr-reader');
             qrReader.style.display = 'none';
             qrCanvas.style.display = 'block';
             html5QrcodeScanner.clear();
             html5QrcodeScanner = null;
-        }).catch((err) => {
-            console.error(`Ошибка остановки сканера: ${err}`);
+        }).catch(err => {
+            console.error("Ошибка остановки сканера:", err);
+            alert("Не удалось остановить сканер: " + err);
         });
+    } else {
+        const qrCanvas = document.getElementById('qrCanvas');
+        const qrReader = document.getElementById('qr-reader');
+        qrReader.style.display = 'none';
+        qrCanvas.style.display = 'block';
     }
 }
 
 // Инициализация
 window.onload = () => {
     calculateDate();
-    generateQRCode(); // Изначально генерируем QR-код с актуальным номером договора
+    generateQRCode();
 
     const inputs = document.querySelectorAll('input, select');
     inputs.forEach(input => {
