@@ -118,13 +118,15 @@ function sendToTelegram() {
     const message = `
 ❱❱❱❱❱ ✅ КЛИЕНТ Otelshin.tu ✅ ❰❰❰❰❰
 
-${clientName} ${phone}
-🛞: ${tireCount}шт.❱❱${hasDisk} ❱❱ [${sezon}]
-Марка:❱❱ ${order}
+${clientName} 
+📞${phone}
 
-🗓Хранение: ❱${startDate} ➽ ${endDate}
+Марка:❱❱ ${order}
+⭕: ❱❱ ${hasDisk} ❱❱ [${sezon}]
+
+⚡Хранение:  ❱ ${startDate} ➽ ${endDate}
 ---------------
-💳 Сумма заказа: ${totalPrice} [${monthlyPrice}мес.]
+💳 Сумма заказа: ${totalPrice} [${tireCount}мес. по ${monthlyPrice}р/мес.]
 ☎️ Напоминание об окончании срока: ${reminderDate} 📞
 ---------------
 Договор: ${contractNumber} (на сайте Otelshin.tu) | Склад: ${storage}
