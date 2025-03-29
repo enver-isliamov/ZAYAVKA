@@ -210,7 +210,7 @@ async function updateGoogleSheet(clientName, phone, order, hasDisk, sezon,
     
     // ВАЖНО: подставить ваши данные
     const SHEET_ID = '1QwNDSkkpDp1kBW9H1C3v1gdvlrHc2OS4WR8HVOXZKh0'; // Получить через URL таблицы
-    const API_KEY = 'AIzaSyCfufjRxEecMLqO8MGsODu1tXYSjmhUHJU'; // Получить в Google Cloud Console
+    const API_KEY = 'AIzaSyBWBa0hhrcGx6rESZeLCXZ7-73U4lJAR0E'; // Получить в Google Cloud Console
     const RANGE = 'База!A2:K100'; // Диапазон для поиска/записи
     
     try {
