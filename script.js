@@ -155,21 +155,33 @@ END:VCARD
         }
 
         const dataURL = tempQrCanvas.toDataURL('image/png');
-        sendImageWithCaption(dataURL, message);
+        
+        // Отправляем в Telegram
+        sendImageWithCaption(dataURL, message)
+            .then(() => {
+                // После успешной отправки обновляем таблицу
+                updateGoogleSheet(clientName, phone, order, hasDisk, sezon, 
+                    tireCount, startDate, endDate, totalPrice, monthlyPrice, 
+                    reminderDate, contractNumber, storage, trafficSource);
+            })
+            .catch(error => {
+                console.error('Ошибка отправки в Telegram:', error);
+                alert('Ошибка при отправке QR-кода в Telegram.');
+            });
     });
 }
 
 // Функция для отправки изображения с подписью в Telegram
-function sendImageWithCaption(dataURL, caption) {
-    fetch(dataURL)
+async function sendImageWithCaption(dataURL, caption) {
+    return fetch(dataURL)
         .then(res => res.blob())
         .then(blob => {
             const formData = new FormData();
-            formData.append('chat_id', chatId);
+            formData.append('chat_id', chatId); // ВАЖНО: подставить ваш chat_id
             formData.append('photo', blob, 'qrcode.png');
             formData.append('caption', caption);
 
-            return fetch(`https://api.telegram.org/bot${telegramBotToken}/sendPhoto`, {
+            return fetch(`https://api.telegram.org/bot${telegramBotToken}/sendPhoto`, { // ВАЖНО: подставить ваш bot token
                 method: 'POST',
                 body: formData
             });
@@ -178,15 +190,138 @@ function sendImageWithCaption(dataURL, caption) {
         .then(data => {
             if (data.ok) {
                 alert('QR-код с описанием успешно отправлен в Telegram!');
+                return true;
             } else {
                 alert('Ошибка при отправке QR-кода в Telegram: ' + data.description);
+                return false;
             }
         })
         .catch(error => {
             console.error('Ошибка отправки в Telegram:', error);
-            alert('Произошла ошибка при отправке QR-кода в Telegram.');
+            alert('Произошла ошибка при отправки QR-кода в Telegram.');
+            return false;
         });
 }
+
+// Функция для работы с Google Sheets
+async function updateGoogleSheet(clientName, phone, order, hasDisk, sezon, 
+    tireCount, startDate, endDate, totalPrice, monthlyPrice, 
+    reminderDate, contractNumber, storage, trafficSource) {
+    
+    // ВАЖНО: подставить ваши данные
+    const SHEET_ID = '1IBBn38ZD-TOgzO9VjYAyKz8mchg_RwWyD6kZ0Lu729A'; // Получить через URL таблицы
+    const API_KEY = 'AIzaSyCfufjRxEecMLqO8MGsODu1tXYSjmhUHJU'; // Получить в Google Cloud Console
+    const RANGE = 'Клиенты!A2:K100'; // Диапазон для поиска/записи
+    
+    try {
+        // Поиск существующего клиента
+        const searchResponse = await fetch(
+            `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values:search?key=${API_KEY}`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    range: RANGE,
+                    valueRenderOption: 'UNFORMATTED_VALUE',
+                    valueInputOption: 'USER_ENTERED',
+                    searchBody: {
+                        location: {
+                            sheetId: 0,
+                            dimension: 'ROWS'
+                        },
+                        query: `${clientName} 📞${phone}`
+                    }
+                })
+            }
+        );
+
+        const searchData = await searchResponse.json();
+        
+        if (searchData.includedRange) {
+            // Обновляем существующую запись
+            const updateResponse = await fetch(
+                `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`,
+                {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        majorDimension: 'ROWS',
+                        values: [
+                            [
+                                clientName,
+                                phone,
+                                order,
+                                hasDisk,
+                                sezon,
+                                tireCount,
+                                startDate,
+                                endDate,
+                                totalPrice,
+                                monthlyPrice,
+                                reminderDate,
+                                contractNumber,
+                                storage,
+                                trafficSource
+                            ]
+                        ]
+                    })
+                }
+            );
+            
+            if (updateResponse.ok) {
+                console.log('Данные клиента обновлены');
+            } else {
+                console.error('Ошибка обновления:', await updateResponse.text());
+            }
+        } else {
+            // Добавляем новую запись
+            const appendResponse = await fetch(
+                `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}:append?key=${API_KEY}`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        majorDimension: 'ROWS',
+                        values: [
+                            [
+                                clientName,
+                                phone,
+                                order,
+                                hasDisk,
+                                sezon,
+                                tireCount,
+                                startDate,
+                                endDate,
+                                totalPrice,
+                                monthlyPrice,
+                                reminderDate,
+                                contractNumber,
+                                storage,
+                                trafficSource
+                            ]
+                        ]
+                    })
+                }
+            );
+            
+            if (appendResponse.ok) {
+                console.log('Новая запись добавлена');
+            } else {
+                console.error('Ошибка добавления:', await appendResponse.text());
+            }
+        }
+    } catch (error) {
+        console.error('Ошибка работы с Google Sheets:', error);
+        alert('Ошибка обновления таблицы. Проверьте API-ключи и доступ к таблице.');
+    }
+}
+
 
 // Инициализация при загрузке страницы
 window.onload = () => {
