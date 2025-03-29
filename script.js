@@ -209,9 +209,9 @@ async function updateGoogleSheet(clientName, phone, order, hasDisk, sezon,
     reminderDate, contractNumber, storage, trafficSource) {
     
     // ВАЖНО: подставить ваши данные
-    const SHEET_ID = '1IBBn38ZD-TOgzO9VjYAyKz8mchg_RwWyD6kZ0Lu729A'; // Получить через URL таблицы
+    const SHEET_ID = '1QwNDSkkpDp1kBW9H1C3v1gdvlrHc2OS4WR8HVOXZKh0'; // Получить через URL таблицы
     const API_KEY = 'AIzaSyCfufjRxEecMLqO8MGsODu1tXYSjmhUHJU'; // Получить в Google Cloud Console
-    const RANGE = 'Клиенты!A2:K100'; // Диапазон для поиска/записи
+    const RANGE = 'База!A2:K100'; // Диапазон для поиска/записи
     
     try {
         // Поиск существующего клиента
