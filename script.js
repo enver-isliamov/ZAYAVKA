@@ -41,7 +41,7 @@ function calculateDate() {
     generateQRCode();
 }
 
-// Функция для генерации QR-кода
+/* // Функция для генерации QR-кода
 function generateQRCode() {
     const clientName = document.getElementById('clientName').value;
     const phone = document.getElementById('phone').value;
@@ -98,6 +98,7 @@ END:VCARD
 
     document.getElementById('qrContent').textContent = noteText;
 }
+    */
 
 // Функция для отправки данных в Telegram
 function sendToTelegram() {
