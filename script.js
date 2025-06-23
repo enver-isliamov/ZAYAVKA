@@ -1,4 +1,5 @@
-const telegramBotToken = "7134836219:AAFOKRDl_f7_nft2Q52UxXFx244Gpqs7DPs";
+// Отправка новой заявки в чат с админом  через бот - ZAYAVKA - 
+const telegramBotToken = "7134836219:AAFOKRDl_f7_nft2Q52UxXFx244Gpqs7DPs"; 
 const chatId = "96609347";
 
 // Функция для расчета общей стоимости
