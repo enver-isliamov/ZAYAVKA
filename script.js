@@ -41,64 +41,6 @@ function calculateDate() {
     generateQRCode();
 }
 
-/* // Функция для генерации QR-кода
-function generateQRCode() {
-    const clientName = document.getElementById('clientName').value;
-    const phone = document.getElementById('phone').value;
-    const order = document.getElementById('order').value;
-    const monthlyPrice = document.getElementById('monthlyPrice').value;
-    const tireCount = document.getElementById('tireCount').value;
-    const hasDisk = document.getElementById('hasDisk').value;
-    const startDate = document.getElementById('startDate').value;
-    const endDate = document.getElementById('endDate').value;
-    const reminderDate = document.getElementById('reminderDate').value;
-    const storage = document.getElementById('storage').value;
-    const sezon = document.getElementById('seZon').value;
-    const totalPrice = document.getElementById('totalPrice').value;
-    const contractNumber = generateContractNumber();
-    const trafficSource = document.getElementById('trafficSource').value;
-
-    document.getElementById('contractNumber').value = contractNumber;
-
-    const noteText = `
-❱❱❱❱❱ ✅ КЛИЕНТ Otelshin.tu ✅ ❰❰❰❰❰
-
-${clientName} 
-📞${phone}
-
-Марка:❱❱ ${order}
-⭕: ❱❱ ${hasDisk} ❱❱ [${sezon}]
-
-⚡Хранение: [${tireCount}мес. ❱ ${startDate} ➽ ${endDate}
----------------
-💳 Сумма заказа: ${totalPrice} ${monthlyPrice}р/мес.]
-☎️ Напоминание об окончании срока: ${reminderDate} 📞
----------------
-Договор: ${contractNumber} (на сайте Otelshin.tu) | Склад: ${storage}
-Источник трафика: ${trafficSource}
-    `;
-
-    const vCardData = `
-BEGIN:VCARD
-VERSION:3.0
-N:${clientName};;;;
-FN:${clientName}
-TEL:${phone}
-NOTE:${noteText.replace(/\n/g, '\\n')}
-END:VCARD
-    `.trim();
-
-    const qrCanvas = document.getElementById('qrCanvas');
-    qrCanvas.width = 300;  // Устанавливаем ширину канваса
-    qrCanvas.height = 300; // Устанавливаем высоту канваса
-
-    QRCode.toCanvas(qrCanvas, vCardData, { width: 300 }, (error) => {
-        if (error) console.error("Ошибка генерации QR-кода:", error);
-    });
-
-    document.getElementById('qrContent').textContent = noteText;
-}
-    */
 
 // Функция для отправки данных в Telegram
 function sendToTelegram() {
@@ -205,122 +147,59 @@ async function sendImageWithCaption(dataURL, caption) {
         });
 }
 
-// Функция для работы с Google Sheets
-async function updateGoogleSheet(clientName, phone, order, hasDisk, sezon, 
-    tireCount, startDate, endDate, totalPrice, monthlyPrice, 
-    reminderDate, contractNumber, storage, trafficSource) {
-    
-    // ВАЖНО: подставить ваши данные
-    const SHEET_ID = '1QwNDSkkpDp1kBW9H1C3v1gdvlrHc2OS4WR8HVOXZKh0'; // Получить через URL таблицы
-    const API_KEY = 'AIzaSyBWBa0hhrcGx6rESZeLCXZ7-73U4lJAR0E'; // Получить в Google Cloud Console
-    const RANGE = 'База!A2:K100'; // Диапазон для поиска/записи
-    
+async function appendToGoogleSheet({
+    chatId, clientName, phone, carNumber, orderQR, monthlyPrice,
+    tireCount, hasDisk, startDate, duration, reminderDate, endDate,
+    storage, cell, totalPrice, debt, contractNumber, address, dealStatus, trafficSource
+}) {
+    const SHEET_ID = '1IBBn38ZD-TOgzO9VjYAyKz8mchg_RwWyD6kZ0Lu729A';
+    const API_KEY = 'AIzaSyBWBa0hhrcGx6rESZeLCXZ7-73U4lJAR0E'; // ⚠️ ВСТАВЬ СВОЙ API КЛЮЧ
+    const SHEET_NAME = 'WebBase';
+    const RANGE = `${SHEET_NAME}!A1:T1`;
+
+    const values = [[
+        chatId,
+        clientName,
+        phone,
+        carNumber,
+        orderQR,
+        monthlyPrice,
+        tireCount,
+        hasDisk,
+        startDate,
+        duration,
+        reminderDate,
+        endDate,
+        storage,
+        cell,
+        totalPrice,
+        debt,
+        contractNumber,
+        address,
+        dealStatus,
+        trafficSource
+    ]];
+
     try {
-        // Поиск существующего клиента
-        const searchResponse = await fetch(
-            `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values:search?key=${API_KEY}`,
+        const response = await fetch(
+            `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}:append?valueInputOption=USER_ENTERED&key=${API_KEY}`,
             {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    range: RANGE,
-                    valueRenderOption: 'UNFORMATTED_VALUE',
-                    valueInputOption: 'USER_ENTERED',
-                    searchBody: {
-                        location: {
-                            sheetId: 0,
-                            dimension: 'ROWS'
-                        },
-                        query: `${clientName} 📞${phone}`
-                    }
+                    values
                 })
             }
         );
 
-        const searchData = await searchResponse.json();
-        
-        if (searchData.includedRange) {
-            // Обновляем существующую запись
-            const updateResponse = await fetch(
-                `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`,
-                {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        majorDimension: 'ROWS',
-                        values: [
-                            [
-                                clientName,
-                                phone,
-                                order,
-                                hasDisk,
-                                sezon,
-                                tireCount,
-                                startDate,
-                                endDate,
-                                totalPrice,
-                                monthlyPrice,
-                                reminderDate,
-                                contractNumber,
-                                storage,
-                                trafficSource
-                            ]
-                        ]
-                    })
-                }
-            );
-            
-            if (updateResponse.ok) {
-                console.log('Данные клиента обновлены');
-            } else {
-                console.error('Ошибка обновления:', await updateResponse.text());
-            }
+        if (response.ok) {
+            console.log('✅ Данные успешно добавлены в WebBase');
         } else {
-            // Добавляем новую запись
-            const appendResponse = await fetch(
-                `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}:append?key=${API_KEY}`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        majorDimension: 'ROWS',
-                        values: [
-                            [
-                                clientName,
-                                phone,
-                                order,
-                                hasDisk,
-                                sezon,
-                                tireCount,
-                                startDate,
-                                endDate,
-                                totalPrice,
-                                monthlyPrice,
-                                reminderDate,
-                                contractNumber,
-                                storage,
-                                trafficSource
-                            ]
-                        ]
-                    })
-                }
-            );
-            
-            if (appendResponse.ok) {
-                console.log('Новая запись добавлена');
-            } else {
-                console.error('Ошибка добавления:', await appendResponse.text());
-            }
+            const errorText = await response.text();
+            console.error('❌ Ошибка добавления данных:', errorText);
         }
-    } catch (error) {
-        console.error('Ошибка работы с Google Sheets:', error);
-        alert('Ошибка обновления таблицы. Проверьте API-ключи и доступ к таблице.');
+    } catch (err) {
+        console.error('❌ Ошибка сети или запроса:', err);
     }
 }
 
