@@ -147,59 +147,122 @@ async function sendImageWithCaption(dataURL, caption) {
         });
 }
 
-async function appendToGoogleSheet({
-    chatId, clientName, phone, carNumber, orderQR, monthlyPrice,
-    tireCount, hasDisk, startDate, duration, reminderDate, endDate,
-    storage, cell, totalPrice, debt, contractNumber, address, dealStatus, trafficSource
-}) {
-    const SHEET_ID = '1IBBn38ZD-TOgzO9VjYAyKz8mchg_RwWyD6kZ0Lu729A';
-    const API_KEY = 'AIzaSyBWBa0hhrcGx6rESZeLCXZ7-73U4lJAR0E'; // ⚠️ ВСТАВЬ СВОЙ API КЛЮЧ
-    const SHEET_NAME = 'WebBase';
-    const RANGE = `${SHEET_NAME}!A1:T1`;
-
-    const values = [[
-        chatId,
-        clientName,
-        phone,
-        carNumber,
-        orderQR,
-        monthlyPrice,
-        tireCount,
-        hasDisk,
-        startDate,
-        duration,
-        reminderDate,
-        endDate,
-        storage,
-        cell,
-        totalPrice,
-        debt,
-        contractNumber,
-        address,
-        dealStatus,
-        trafficSource
-    ]];
-
+// Функция для работы с Google Sheets
+async function updateGoogleSheet(clientName, phone, order, hasDisk, sezon, 
+    tireCount, startDate, endDate, totalPrice, monthlyPrice, 
+    reminderDate, contractNumber, storage, trafficSource) {
+    
+    // ВАЖНО: подставить ваши данные
+    const SHEET_ID = '1QwNDSkkpDp1kBW9H1C3v1gdvlrHc2OS4WR8HVOXZKh0'; // Получить через URL таблицы
+    const API_KEY = 'AIzaSyBWBa0hhrcGx6rESZeLCXZ7-73U4lJAR0E'; // Получить в Google Cloud Console
+    const RANGE = 'База!A2:K100'; // Диапазон для поиска/записи
+    
     try {
-        const response = await fetch(
-            `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}:append?valueInputOption=USER_ENTERED&key=${API_KEY}`,
+        // Поиск существующего клиента
+        const searchResponse = await fetch(
+            `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values:search?key=${API_KEY}`,
             {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify({
-                    values
+                    range: RANGE,
+                    valueRenderOption: 'UNFORMATTED_VALUE',
+                    valueInputOption: 'USER_ENTERED',
+                    searchBody: {
+                        location: {
+                            sheetId: 0,
+                            dimension: 'ROWS'
+                        },
+                        query: `${clientName} 📞${phone}`
+                    }
                 })
             }
         );
 
-        if (response.ok) {
-            console.log('✅ Данные успешно добавлены в WebBase');
+        const searchData = await searchResponse.json();
+        
+        if (searchData.includedRange) {
+            // Обновляем существующую запись
+            const updateResponse = await fetch(
+                `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`,
+                {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        majorDimension: 'ROWS',
+                        values: [
+                            [
+                                clientName,
+                                phone,
+                                order,
+                                hasDisk,
+                                sezon,
+                                tireCount,
+                                startDate,
+                                endDate,
+                                totalPrice,
+                                monthlyPrice,
+                                reminderDate,
+                                contractNumber,
+                                storage,
+                                trafficSource
+                            ]
+                        ]
+                    })
+                }
+            );
+            
+            if (updateResponse.ok) {
+                console.log('Данные клиента обновлены');
+            } else {
+                console.error('Ошибка обновления:', await updateResponse.text());
+            }
         } else {
-            const errorText = await response.text();
-            console.error('❌ Ошибка добавления данных:', errorText);
+            // Добавляем новую запись
+            const appendResponse = await fetch(
+                `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}:append?key=${API_KEY}`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        majorDimension: 'ROWS',
+                        values: [
+                            [
+                                clientName,
+                                phone,
+                                order,
+                                hasDisk,
+                                sezon,
+                                tireCount,
+                                startDate,
+                                endDate,
+                                totalPrice,
+                                monthlyPrice,
+                                reminderDate,
+                                contractNumber,
+                                storage,
+                                trafficSource
+                            ]
+                        ]
+                    })
+                }
+            );
+            
+            if (appendResponse.ok) {
+                console.log('Новая запись добавлена');
+            } else {
+                console.error('Ошибка добавления:', await appendResponse.text());
+            }
         }
-    } catch (err) {
-        console.error('❌ Ошибка сети или запроса:', err);
+    } catch (error) {
+        console.error('Ошибка работы с Google Sheets:', error);
+        alert('Ошибка обновления таблицы. Проверьте API-ключи и доступ к таблице.');
     }
 }
 
