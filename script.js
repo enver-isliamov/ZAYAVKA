@@ -147,124 +147,119 @@ async function sendImageWithCaption(dataURL, caption) {
         });
 }
 
-// Функция для работы с Google Sheets
-async function updateGoogleSheet(clientName, phone, order, hasDisk, sezon, 
-    tireCount, startDate, endDate, totalPrice, monthlyPrice, 
-    reminderDate, contractNumber, storage, trafficSource) {
-    
-    // ВАЖНО: подставить ваши данные
-    const SHEET_ID = '1QwNDSkkpDp1kBW9H1C3v1gdvlrHc2OS4WR8HVOXZKh0'; // Получить через URL таблицы
-    const API_KEY = 'AIzaSyBWBa0hhrcGx6rESZeLCXZ7-73U4lJAR0E'; // Получить в Google Cloud Console
-    const RANGE = 'База!A2:K100'; // Диапазон для поиска/записи
-    
-    try {
-        // Поиск существующего клиента
-        const searchResponse = await fetch(
-            `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values:search?key=${API_KEY}`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    range: RANGE,
-                    valueRenderOption: 'UNFORMATTED_VALUE',
-                    valueInputOption: 'USER_ENTERED',
-                    searchBody: {
-                        location: {
-                            sheetId: 0,
-                            dimension: 'ROWS'
-                        },
-                        query: `${clientName} 📞${phone}`
-                    }
-                })
-            }
-        );
+/**
+ * Функция для добавления или обновления клиента в таблице Google Sheets.
+ * Работает с листом "WebBase" и колонками (в точном порядке):
+ * Chat ID, Имя клиента, Телефон, Номер Авто, Заказ - QR, Цена за месяц,
+ * Кол-во шин, Наличие дисков, Начало, Срок, Напомнить, Окончание,
+ * Склад хранения, Ячейка, Общая сумма, Долг, Договор, Адрес клиента,
+ * Статус сделки, Источник трафика
+ * 
+ * Входной объект clientData должен содержать соответствующие поля.
+ * Chat ID можно передавать пустым или с каким-то значением, если есть.
+ */
 
-        const searchData = await searchResponse.json();
-        
-        if (searchData.includedRange) {
-            // Обновляем существующую запись
+async function updateGoogleSheet(clientData) {
+    const SHEET_ID = '1QwNDSkkpDp1kBW9H1C3v1gdvlrHc2OS4WR8HVOXZKh0';
+    const API_KEY = 'AIzaSyBWBa0hhrcGx6rESZeLCXZ7-73U4lJAR0E';
+    const SHEET_NAME = 'WebBase';
+
+    try {
+        // 1) Получаем данные листа, чтобы найти клиента (строки с 2 и ниже)
+        const getResponse = await fetch(
+            `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}!A2:T1000?key=${API_KEY}`
+        );
+        const sheetData = await getResponse.json();
+
+        let rowIndex = -1; // индекс строки, если клиент найден
+
+        if (sheetData.values) {
+            for (let i = 0; i < sheetData.values.length; i++) {
+                const row = sheetData.values[i];
+                // Имена клиента (колонка B, индекс 1) и Телефон (колонка C, индекс 2)
+                const nameInRow = row[1] || '';
+                const phoneInRow = row[2] || '';
+
+                if (nameInRow === clientData.clientName && phoneInRow === clientData.phone) {
+                    rowIndex = i + 2; // +2, т.к. данные начинаются с A2
+                    break;
+                }
+            }
+        }
+
+        // 2) Формируем массив значений для записи в таблицу
+        // Важно: Колонки A-T (20 колонок), заполняем в точном порядке
+        // Если каких-то данных нет — ставим пустую строку ''
+        const values = [
+            clientData.chatId || '',            // Chat ID — колонка A (0)
+            clientData.clientName || '',       // Имя клиента — B (1)
+            clientData.phone || '',            // Телефон — C (2)
+            clientData.carNumber || '',        // Номер Авто — D (3)
+            clientData.orderQR || '',          // Заказ - QR — E (4)
+            clientData.monthlyPrice || '',     // Цена за месяц — F (5)
+            clientData.tireCount || '',        // Кол-во шин — G (6)
+            clientData.hasDisk || '',          // Наличие дисков — H (7)
+            clientData.startDate || '',        // Начало — I (8)
+            clientData.term || '',             // Срок — J (9)
+            clientData.reminderDate || '',     // Напомнить — K (10)
+            clientData.endDate || '',          // Окончание — L (11)
+            clientData.storage || '',          // Склад хранения — M (12)
+            clientData.cell || '',             // Ячейка — N (13)
+            clientData.totalPrice || '',       // Общая сумма — O (14)
+            clientData.debt || '',             // Долг — P (15)
+            clientData.contractNumber || '',   // Договор — Q (16)
+            clientData.clientAddress || '',    // Адрес клиента — R (17)
+            clientData.dealStatus || '',       // Статус сделки — S (18)
+            clientData.trafficSource || ''     // Источник трафика — T (19)
+        ];
+
+        if (rowIndex > 0) {
+            // 3а) Обновляем существующую запись по найденной строке
+            const updateRange = `${SHEET_NAME}!A${rowIndex}:T${rowIndex}`; // 20 колонок A-T
+
             const updateResponse = await fetch(
-                `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`,
+                `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(updateRange)}?valueInputOption=USER_ENTERED&key=${API_KEY}`,
                 {
                     method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
+                        range: updateRange,
                         majorDimension: 'ROWS',
-                        values: [
-                            [
-                                clientName,
-                                phone,
-                                order,
-                                hasDisk,
-                                sezon,
-                                tireCount,
-                                startDate,
-                                endDate,
-                                totalPrice,
-                                monthlyPrice,
-                                reminderDate,
-                                contractNumber,
-                                storage,
-                                trafficSource
-                            ]
-                        ]
+                        values: [values]
                     })
                 }
             );
-            
+
             if (updateResponse.ok) {
-                console.log('Данные клиента обновлены');
+                console.log(`Данные клиента "${clientData.clientName}" обновлены успешно.`);
             } else {
-                console.error('Ошибка обновления:', await updateResponse.text());
+                console.error('Ошибка обновления данных:', await updateResponse.text());
             }
         } else {
-            // Добавляем новую запись
+            // 3б) Добавляем новую запись в таблицу
+            const appendRange = `${SHEET_NAME}!A2:T2`; // вставка в колонки A-T начиная со строки 2
+
             const appendResponse = await fetch(
-                `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}:append?key=${API_KEY}`,
+                `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(appendRange)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS&key=${API_KEY}`,
                 {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        majorDimension: 'ROWS',
-                        values: [
-                            [
-                                clientName,
-                                phone,
-                                order,
-                                hasDisk,
-                                sezon,
-                                tireCount,
-                                startDate,
-                                endDate,
-                                totalPrice,
-                                monthlyPrice,
-                                reminderDate,
-                                contractNumber,
-                                storage,
-                                trafficSource
-                            ]
-                        ]
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ values: [values] })
                 }
             );
-            
+
             if (appendResponse.ok) {
-                console.log('Новая запись добавлена');
+                console.log(`Новая запись клиента "${clientData.clientName}" добавлена успешно.`);
             } else {
-                console.error('Ошибка добавления:', await appendResponse.text());
+                console.error('Ошибка добавления новой записи:', await appendResponse.text());
             }
         }
     } catch (error) {
-        console.error('Ошибка работы с Google Sheets:', error);
-        alert('Ошибка обновления таблицы. Проверьте API-ключи и доступ к таблице.');
+        console.error('Ошибка при работе с Google Sheets API:', error);
+        alert('Ошибка обновления таблицы. Проверьте API-ключ и права доступа.');
     }
 }
+
 
 
 // Инициализация при загрузке страницы
