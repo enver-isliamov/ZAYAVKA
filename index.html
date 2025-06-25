@@ -3,108 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Карточка заказа услуги</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>ОтельШин - Новый заказ</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="Оригинал.css">
 </head>
 <body>
-  <div class="container">
-        <div class="card">
-        <div class="card-header">
-            <div class="field">
-                <div class="field-label">Клиент</div>
-                <div class="field-value"><input type="text" id="clientName" placeholder="ФИО"></div>
+
+    <header class="page-header">
+        <div class="user-section">
+            <div class="user-info">
+                <div class="user-info-item">
+                    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path></svg>
+                    <input type="text" class="editable" id="clientName" value="" placeholder="Фамилия Имя Отчество">
+                </div>
+                <div class="user-info-item">
+                    <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"></path></svg>
+                    <input type="tel" class="editable" id="phone" placeholder="+7 (___) ___-__-__">
+                </div>
+                <div class="user-info-item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path></svg>
+                    <input type="text" class="editable" value="" placeholder="Улица, №-дома ">
+                </div>
             </div>
-            <div class="field">
-                <div class="field-label">Телефон</div>
-                <div class="field-value"><input type="tel" id="phone" placeholder="+7 (978)-xxx-xx-xx"></div>
-            </div>
-            <div class="field">
-                <div class="field-label">Марка ➽ Размер ➽ Состояние</div>
-                <div class="field-value"><input type="text" id="order" placeholder="Pirelli Scorpion 255/55/R16 состояние"></div>
-            </div>
+            <button class="logout-button" aria-label="Выйти">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path></svg>
+            </button>
         </div>
-        <div class="card-body grid-container">
-            <div class="field">
-                <div class="field-label">Цена за месяц</div>
-                <div class="field-value">
-                    <select id="monthlyPrice" onchange="calculateTotal()">
-                        <option value="500">500</option>
-                        <option value="600" selected>600</option>
-                        <option value="700">700</option>
-                        <option value="800">800</option>
-                        <option value="900">900</option>
-                        <option value="1000">1000</option>
-                    </select>
+    </header>
+
+    <main>
+        <article class="order-card">
+            
+            <div class="card-header">
+                <div class="header-tags-wrapper">
+                    <div class="tags">
+                        <div class="tag tag-contract">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                            <span>Договор:</span>
+                            <input type="text" class="editable" id="contractNumber" value="" placeholder="Номер договора генерируется атоматически">
+                        </div>
+                    </div>
+                    <div class="tags">
+                        <div class="tag tag-location">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                            <span>Склад:</span>
+                            <input type="text" class="editable tag-code-input" id="order" value="ABD13" maxlength="5" style="width: 7ch;">
+                        </div>
+                        <div class="tag tag-location">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18 4v16H6V4h12m0-2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM8 6h8v2H8V6zm0 4h8v2H8v-2z"></path></svg>
+                            <span>Ячейка:</span>
+                            <input type="text" class="editable" value="" placeholder="E-45" maxlength="20" style="width: 7ch;">
+                            </div>
+                            <div class="tag tag-location">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                            <span>Источник:</span>
+                            <input type="text" class="editable tag-code-input" id="trafficSource" value="" placeholder="Авито" maxlength="" style="width: 7ch;">
+                        </div>
+                        
+                    </div>
                 </div>
             </div>
-            <div class="field">
-                <div class="field-label">Кол-во месяцев</div>
-                <div class="field-value">
-                    <select id="tireCount" onchange="calculateTotal()">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4" selected>4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                    </select>
+
+            <div class="info-block">
+                <!-- Оставили как было в оригинале, без изменения ID или текста -->
+                <div class="info-block-title" id="showQrContent">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 11h8V3H3v8zm2-6h4v4H5V5zM3 21h8v-8H3v8zm2-6h4v4H5v-4zm8-12v8h8V3h-8zm6 6h-4V5h4v4zm-2 6h-2v2h2v-2zm-4 0h-2v2h2v-2zm-4 4h2v2H7v-2zm-4 0h2v2H3v-2zm12 2h-2v2h2v-2zm4 0h-2v2h2v-2zm2-4h-2v2h2v-2zm0-4h-2v2h2v-2z"></path></svg>
+                    Заказ-QR
+                </div>
+                <!-- Оставили как было в оригинале -->
+                <p class="info-block-hint">❱ Бренд ❱❱ Размер ❱❱❱ Состояние...</p>
+                <!-- УДАЛЕНО: <canvas id="qrCanvas" style="display: none;"></canvas> -->
+                <div class="info-block-content">
+                    <!-- Оставили как было в оригинале -->
+                    <textarea class="editable" id="qrContent" placeholder="❱ Pirelli ❱❱ 255/55/R16 ❱❱❱ описание деффектов "></textarea>
                 </div>
             </div>
-            <div class="field">
-                <div class="field-label">Наличие дисков</div>
-                <div class="field-value">
-                    <select id="hasDisk">
-                        <option value="Без дисков">Без дисков</option>
-                        <option value="С дисками">С дисками</option>
-                    </select>
+            
+            <div class="pills-container">
+                <div class="pill">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"></path></svg>
+                    <span>Номер Авто</span>
+                    <input type="text" class="editable car-number-input" id="car-number-input" placeholder="A000AA00" maxlength="10" style="width: 12ch; min-width: auto;">
+                </div>
+                <div class="pill">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm10 14H4V8h16v10zM12 12c-1.66 0-3-1.34-3-3H7c0 2.76 2.24 5 5 5s5-2.24 5-5h-2c0 1.66-1.34 3-3 3z"></path></svg>
+                    <span>Количество шин:</span>
+                    <input type="text" inputmode="numeric" class="editable" id="tireCount" value="4" style="width: 2ch; text-align: center;"> <span>шт.</span>
+                </div>
+                <div class="pill">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm0-16.5c-2.48 0-4.5 2.02-4.5 4.5s2.02 4.5 4.5 4.5 4.5-2.02 4.5-4.5-2.02-4.5-4.5-4.5z"></path></svg>
+                    <span>Диски:</span>
+                    <select class="editable" id="hasDisk"><option value="Нет" selected>Нет</option><option value="Да">Да</option></select>
+                </div>
+                <div class="pill">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8zM19 11h-3.33V4h-3.33v7H9l5 5 5-5zM12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"></path></svg>
+                    <span>Сезон:</span>
+                    <select class="editable" id="seZon"><option value="Зима" selected>Зима</option><option value="Лето">Лето</option></select>
                 </div>
             </div>
-            <div class="field">
-                <div class="field-label">Сезон</div>
-                <div class="field-value">
-                    <select id="seZon">
-                        <option value="Зима">Зима</option>
-                        <option value="Лето">Лето</option>
-                    </select>
+
+            <div class="info-section">
+                <div class="info-row" style="border:none; padding:0;">
+                    <span class="label">Срок хранения</span>
+                    <div class="value">
+                        <input type="text" inputmode="numeric" class="editable" id="storage" value="4">
+                        <span>месяца</span>
+                    </div>
                 </div>
             </div>
-            <div class="field">
-                <div class="field-label">Начало</div>
-                <div class="field-value"><input type="date" id="startDate" value="2024-06-29"></div>
+
+            <div class="info-section finance">
+                <h4 class="info-section-title">Финансы</h4>
+                <div class="info-row">
+                    <span class="label">За месяц:</span>
+                    <div class="value monthly-value"><input type="text" inputmode="numeric" class="editable" id="monthlyPrice" value="600"> ₽</div>
+                </div>
+                <div class="info-row">
+                    <span class="label">Общая сумма:</span>
+                    <div class="value total-amount"><input type="text" inputmode="numeric" class="editable" id="totalPrice" value=""> ₽</div>
+                </div>
+                <div class="info-row">
+                    <span class="label">Долг:</span>
+                    <div class="value debt"><input type="text" inputmode="numeric" class="editable" value="0"> ₽</div>
+                </div>
             </div>
-            <div class="field">
-                <div class="field-label">Окончание</div>
-                <div class="field-value"><input type="date" id="endDate" value="2024-08-29"></div>
+            
+            <div class="info-section">
+                <h4 class="info-section-title">Важные даты</h4>
+                <div class="date-fields-wrapper">
+                    <div class="date-box"><span class="label">Начало:</span><input type="date" class="editable" id="startDate" value="2024-10-13"></div>
+                     <div class="date-box"><span class="label">Окончание:</span><input type="date" class="editable" id="endDate" value="2024-12-13"></div>
+                    <div class="date-box"><span class="label">Дата напоминания:</span><input type="date" class="editable" id="reminderDate" value=""></div>
+                </div>
             </div>
-            <div class="field">
-                <div class="field-label">Напомнить</div>
-                <div class="field-value"><input type="date" id="reminderDate" value="2024-08-22"></div>
+            
+            <input type="hidden" id="trafficSource" value="">
+
+            <div class="actions-container">
+                <button class="action-button">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+                    Оформить
+                </button>
+                <a href="https://otelshin.ru" target="_blank" class="action-button action-button-website">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.95-2.09c-.6-.7-1.43-1.16-2.35-1.16h-1v-3c0-1.1-.9-2-2-2H6.05C6.5 6.81 7 5.76 7 4.5 7 4.5 7 4.5 7 4.5c1.47 0 2.87.58 3.89 1.62l.11.12V11c0 .55.45 1 1 1h4c.55 0 1-.45 1-1V5.5c-.35.08-.69.21-1 .36v2.33c0 .28-.22.5-.5.5-.03 0-.05-.01-.08-.01-.46-.05-.9-.16-1.3-.3v-1.1c0-.28-.22-.5-.5-.5s-.5.22-.5.5v1.2c-.44-.22-.9-.39-1.38-.51L12 9c-.55 0-1-.45-1-1V6H9v-.63C10.74 3.6 11.59 2 12 2c4.42 0 8 3.58 8 8 0 2.22-.89 4.23-2.34 5.67z"></path></svg>
+                    O
+                </a>
             </div>
-            <div class="field full-width">
-                <div class="field-label">Склад хранения [назначен автоматически]</div>
-                <div class="field-value"><input type="text" id="storage" value="ABD13"></div>
-            </div>
-            <div class="field">
-                <div class="field-label">Сумма заказа</div>
-                <div class="field-value"><input type="number" id="totalPrice" value="2400" readonly></div>
-            </div>
-            <div class="field">
-                <div class="field-label">Договор</div>
-                <div class="field-value"><input type="text" id="contractNumber" value="" readonly></div>
-            </div>
-            <div class="field">
-                <div class="field-label">Источник трафика</div>
-                <div class="field-value"><input type="text" id="trafficSource" value="❰AVITO❱"></div>
-            </div>
-            <div class="send-button">
-               <button onclick="window.location.href='https://otelshin.ru/'">Сайт</button>
-               <button onclick="sendToTelegram()">Отправить в Telegram</button>
-            </div>
-        </div>
-    </div>
-  </div>
-  <script src="script.js"></script>
+        </article>
+    </main>
+
+    <script src="https://unpkg.com/imask"></script>
+    <script src="script.js"></script>
+
 </body>
 </html>
