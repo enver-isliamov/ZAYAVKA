@@ -7,7 +7,7 @@ const chatId = "96609347";
 // URL веб-приложения Google Apps Script, которое обрабатывает запись в Google Таблицу.
 // ОЧЕНЬ ВАЖНО: Замените этот плейсхолдер на фактический URL, полученный после развертывания Apps Script.
 // Пример: 'https://script.google.com/macros/s/AKfycbzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz/exec';
-const googleSheetsWebAppURL = 'https://script.google.com/macros/s/AKfycbwzJIzAjCjxborXQ1OCSmWlLBRFDrjeTUd9-sDYN7jaxcW6KFJ-RyQp6ZuyxG7C3d0c/exec'; 
+const googleSheetsWebAppURL = 'https://script.google.com/macros/s/AKfycbxScdc_hBGtG5Do0UaG70V_Q5w6-kuv0iaWcrHqLndQV7qDHmNqaY0CPufcI2am6qxC/exec'; 
 
 // Базовая месячная цена хранения, до учета дисков. Инициализируется при загрузке страницы.
 let baseMonthlyPriceStorage = 0; 
