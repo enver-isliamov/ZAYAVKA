@@ -1,116 +1,226 @@
+/* :root определяет глобальные CSS переменные (кастомные свойства) для всей страницы. */
+/* Это позволяет легко управлять темой (цветами, отступами, тенями) из одного места. */
+:root {
+    /* Фирменные цвета и их оттенки */
+    --brand-purple: #5e35b1;
+    --purple-light-bg: #f4f1fa;
+    
+    /* Цвета текста */
+    --dark-text: #2c3e50;
+    --grey-text: #7f8c8d;
+
+    /* Цвета фона и границ */
+    --light-grey-bg: #f8f9fa;
+    --border-color: #e0e0e0;
+    --white: #ffffff;
+
+    /* Семантические цвета для статусов и акцентов */
+    --blue: #3498db;
+    --green: #27ae60;
+    --red: #e74c3c;
+    
+    /* Светлые фоны для семантических цветов */
+    --yellow-light-bg: #fef9e7;
+    --yellow-dark-text: #f39c12;
+    --blue-light-bg: #eaf2f8; 
+    --storage-light-bg: #f3f2fa;
+
+    /* Переменные для стилизации элементов (скругление, тень) */
+    --border-radius-main: 16px; /* Основной радиус скругления для крупных блоков */
+    --border-radius-small: 8px;  /* Малый радиус скругления для вложенных элементов */
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.05); /* Стандартная тень для карточек */
+}
+
+/* Универсальный селектор. Сбрасывает стандартные отступы (margin, padding) у всех элементов */
+/* и устанавливает модель 'border-box', чтобы padding и border не увеличивали итоговую ширину/высоту элемента. */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* Стили для основного контейнера страницы (body). */
 body {
-    font-family: Montserrat, sans-serif;
-    background-color: #f7f9fc;
-    margin: 0;
-    padding: 20px;
+    font-family: 'Inter', sans-serif; /* Основной шрифт */
+    background-color: var(--light-grey-bg); /* Цвет фона страницы */
+    color: var(--dark-text); /* Основной цвет текста */
+    padding: 24px; /* Внутренние отступы по краям страницы */
 }
 
-.container {
-    max-width: 1080px;
-    width: 100%;
-    padding: 1em;
-    box-sizing: border-box;
-    border-radius: 10px;
-    margin: 0;
-    color: var(--text-color);
-    text-align: center;
+/* Стили для редактируемых элементов, которые выглядят как обычный текст. */
+.editable {
+    background: transparent; /* Прозрачный фон */
+    border: none; /* Убираем рамку */
+    font-family: inherit; /* Наследуем шрифт от родителя */
+    font-size: inherit; /* Наследуем размер шрифта */
+    font-weight: inherit; /* Наследуем жирность шрифта */
+    color: inherit; /* Наследуем цвет текста */
+    padding: 2px 4px; /* Небольшие отступы для удобства клика */
+    margin: -2px -4px; /* Отрицательные отступы для компенсации padding */
+    border-radius: 4px; /* Небольшое скругление */
+    width: 100%; /* Занимает всю доступную ширину */
+    outline: none; /* Убираем стандартную обводку при фокусе */
+    resize: none; /* Запрещаем пользователю изменять размер (для textarea) */
+    transition: background-color 0.2s, box-shadow 0.2s; /* Плавный переход для фона и тени */
+}
+/* Стили для плейсхолдера (подсказки) в редактируемых полях. */
+.editable::placeholder { color: var(--grey-text); opacity: 0.5; font-weight: 400; }
+/* Стили для редактируемого элемента в состоянии фокуса (при клике/выборе). */
+.editable:focus { background-color: var(--white); box-shadow: 0 0 0 2px var(--brand-purple); }
+
+/* Стили для заголовка страницы. */
+.page-header { 
+    display: flex; /* Используем Flexbox для выравнивания */
+    justify-content: space-between; /* Элементы распределяются по краям */
+    align-items: center; /* Вертикальное выравнивание по центру */
+    margin-bottom: 32px; /* Внешний отступ снизу */
+    background-color: var(--white); /* Белый фон */
+    padding: 16px 24px; /* Внутренние отступы */
+    border-radius: var(--border-radius-main); /* Скругление углов */
+    box-shadow: var(--shadow); /* Тень */
+    flex-wrap: wrap; /* Разрешаем перенос элементов на новую строку */
+    gap: 16px; /* Расстояние между элементами */
+    max-width: 600px; /* Максимальная ширина */
+    margin-left: auto; margin-right: auto; /* Центрирование по горизонтали */
+}
+/* Секция с информацией о пользователе внутри заголовка. */
+.user-section { display: flex; align-items: center; gap: 16px; flex-grow: 1; flex-wrap: wrap; }
+/* Контейнер для текстовой информации о пользователе. */
+.user-info { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; min-width: 180px; }
+/* Отдельный элемент информации о пользователе (например, имя или email). */
+.user-info-item { display: flex; align-items: center; gap: 8px; font-size: 16px; }
+/* Выравнивание текста в редактируемом поле внутри информации о пользователе. */
+.user-info-item .editable { text-align: left; font-weight: 500; }
+/* Стили для иконок рядом с информацией о пользователе. */
+.user-info-item svg { width: 18px; height: 18px; fill: var(--grey-text); flex-shrink: 0; }
+/* Кнопка выхода из системы. */
+.logout-button { width: 48px; height: 48px; border: 1px solid var(--border-color); border-radius: 50%; background: none; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: background-color 0.2s; flex-shrink: 0; margin-left: auto; }
+
+/* Основной контент страницы. Ограничение по ширине и центрирование. */
+main { max-width: 600px; margin: 0 auto; }
+
+/* Стили для основной карточки (например, карточки заказа). */
+.order-card { background-color: var(--white); border-radius: var(--border-radius-main); box-shadow: var(--shadow); padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+/* Заголовок карточки. */
+.card-header { display: flex; justify-content: flex-start; }
+/* Обёртка для тегов в заголовке. */
+.header-tags-wrapper { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+/* Контейнер для тегов. */
+.tags { display: flex; flex-wrap: wrap; gap: 8px; }
+/* Стили для отдельного тега. */
+.tag { padding: 6px 12px; border-radius: 16px; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+/* Модификатор для тега "контракт" (желтый). */
+.tag-contract { background-color: var(--yellow-light-bg); color: var(--yellow-dark-text); }
+/* Модификатор для тега "локация" (серый). */
+.tag-location { background-color: #e5ebff; color: var(--dark-text); }
+/* Стиль для редактируемого поля внутри тега. */
+.tag .editable { width: auto; }
+/* Стили для полей ввода, требующих верхнего регистра. */
+.tag-code-input, .car-number-input { text-transform: uppercase; }
+/* Убираем верхний регистр у плейсхолдера в таких полях. */
+.tag-code-input::placeholder, .car-number-input::placeholder { text-transform: none; }
+
+/* Стили для информационного блока с фиолетовым акцентом. */
+.info-block { background-color: var(--purple-light-bg); border-radius: var(--border-radius-main); padding: 16px; }
+/* Заголовок информационного блока. */
+.info-block-title { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; color: var(--brand-purple); margin-bottom: 8px; }
+/* Подсказка в информационном блоке. */
+.info-block-hint { font-size: 12px; color: var(--brand-purple); opacity: 0.7; margin-bottom: 12px; padding-left: 32px; }
+/* Контентная часть информационного блока (с белым фоном). */
+.info-block-content { background-color: var(--white); padding: 16px; border-radius: var(--border-radius-small); }
+/* Стили для многострочного редактируемого поля внутри блока. */
+.info-block-content textarea.editable { height: 80px; line-height: 1.6; font-weight: 500; }
+        
+/* Контейнер для "пилюль" (элементов в виде таблеток). */
+.pills-container { display: flex; gap: 12px; flex-wrap: wrap; }
+/* Стили для отдельной "пилюли". */
+.pill { background-color: #ecf0f1; padding: 10px 16px; border-radius: var(--border-radius-small); display: flex; align-items: center; gap: 8px; font-size: 16px; }
+/* Редактируемое поле внутри "пилюли". */
+.pill .editable { font-weight: 600; width: auto; }
+/* Увеличенный шрифт для поля ввода номера автомобиля. */
+.pill .car-number-input { font-size: 20px !important; }
+/* Скрываем стандартную стрелку у выпадающего списка (select). */
+.pill select.editable { -webkit-appearance: none; -moz-appearance: none; appearance: none; padding-right: 0; }
+
+/* Общий стиль для информационной секции (например, 'Финансы' или 'Адрес'). */
+.info-section { background-color: var(--light-grey-bg); padding: 16px; border-radius: var(--border-radius-main); }
+/* Заголовок информационной секции. */
+.info-section-title { font-size: 18px; font-weight: 600; margin-bottom: 12px; }
+/* Строка с данными (ключ-значение). */
+.info-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 16px; }
+/* Нижняя граница для всех строк, кроме последней. */
+.info-row:not(:last-child) { border-bottom: 1px solid var(--border-color); }
+/* Стиль для метки (ключа) в строке. */
+.info-row .label { color: var(--grey-text); margin-right: 16px; white-space: nowrap; }
+/* Стиль для значения в строке. */
+.info-row .value { font-weight: 600; display: flex; align-items: center; gap: 4px; text-align: right; }
+/* Редактируемое поле внутри значения. */
+.info-row .editable { text-align: right; }
+
+/* Модификатор для финансовой секции (синий фон). */
+.info-section.finance { background-color: var(--blue-light-bg); }
+/* Модификатор для секции 'Склад' (фиолетовый фон). */
+.info-section.storage { background-color: var(--storage-light-bg); }
+/* Модификаторы цвета для разных типов значений. */
+.info-row .value.monthly-value { color: var(--blue); } /* Ежемесячный платеж */
+.info-row .value.total-amount-value { color: var(--green); } /* Общая сумма */
+.info-row .value.debt { color: var(--red); font-weight: 700; } /* Долг */
+.info-row .value.total-amount { font-size: 24px; font-weight: 700; color: var(--green); } /* Итоговая сумма (крупнее) */
+/* Модификатор для заголовка секции "Адрес" (зеленый цвет). */
+.info-section.address .info-section-title { color: var(--green); }
+        
+/* Обёртка для полей с датами. */
+.date-fields-wrapper { display: flex; gap: 12px; flex-wrap: wrap; }
+/* Стиль для отдельного блока с датой. */
+.date-box { background-color: var(--white); border: 1px solid var(--border-color); border-radius: var(--border-radius-small); padding: 12px; flex: 1; min-width: 120px;}
+/* Метка над полем с датой. */
+.date-box .label { color: var(--grey-text); font-size: 12px; margin-bottom: 4px; display: block; }
+/* Редактируемое поле с датой. */
+.date-box .editable { font-size: 16px; font-weight: 600; padding: 0; margin: 0; text-align: left; }
+
+/* Контейнер для кнопок действий. */
+.actions-container { display: flex; gap: 16px; align-items: center; }
+/* Стиль для кнопки действия. */
+.action-button { 
+    flex-grow: 1; 
+    padding: 14px; 
+    font-size: 16px; 
+    font-weight: 600; 
+    background-color: #eaf2f8; 
+    color: var(--blue); 
+    border: 1px solid var(--blue); 
+    border-radius: var(--border-radius-small); 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    gap: 8px; 
+    cursor: pointer; 
+    transition: background-color 0.2s; 
+    text-decoration: none; /* Добавлено: убрать подчеркивание для ссылок */
+}
+/* Стиль кнопки при наведении курсора. */
+.action-button:hover { background-color: #d4e6f1; }
+/* Цвет иконки в кнопке. */
+.action-button svg { fill: var(--blue); }
+
+/* НОВЫЙ СТИЛЬ: для кнопки перехода на сайт Otelshin.ru */
+.action-button-website {
+    background-color: var(--green); /* Зеленый фон */
+    color: var(--white); /* Белый текст */
+    border-color: var(--green); /* Зеленая рамка */
 }
 
-.card-header {
-    margin-bottom: 20px;
+.action-button-website svg {
+    fill: var(--white); /* Белая иконка */
 }
 
-.field {
-    margin-bottom: 10px;
+.action-button-website:hover {
+    background-color: #219d55; /* Темно-зеленый при наведении */
+    border-color: #219d55;
 }
 
-.field-label {
-    font-size: 14px;
-    color: #3390EC;
-    margin-bottom: 5px;
-}
-
-.field-value input, .field-value select {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
-    color: #333;
-}
-
-.field-value input[type="date"] {
-    font-family: Arial, sans-serif;
-}
-
-.send-button {
-    grid-column: 1 / -1;
-    text-align: center;
-    margin-top: 20px;
-}
-
-.send-button button {
-    background-color: #0D99FF;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.send-button button:hover {
-    background-color: #0088cc;
-}
-
-.grid-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-}
-
-.full-width {
-    grid-column: 1 / -1;
-}
-
-/* Стили для QR-кода */
-#qr-container {
-    width: 100%;
-    max-width: 300px;
-    height: auto;
-    position: relative;
-    margin: 0 auto 10px auto;
-    border: 1px solid #ddd;
-    background-color: #fff;
-}
-
-#qrCanvas {
-    display: block;
-    width: 100%;
-    height: auto;
-}
-
-#showQrContent {
-    background-color: #0D99FF;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    font-size: 14px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin: 0 5px 10px 5px;
-}
-
-#showQrContent:hover {
-    background-color: #0088cc;
-}
-
-#qrContent {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    padding: 10px;
-    border-radius: 4px;
-    font-size: 14px;
-    text-align: left;
+/* Медиа-запрос для адаптивности. Стили применяются на экранах шириной 768px и меньше (планшеты и мобильные устройства). */
+@media (max-width: 768px) {
+    body { padding: 12px; } /* Уменьшаем отступы на маленьких экранах */
+    .user-section { align-items: flex-start; } /* Выравниваем элементы в блоке пользователя по верху */
+    .logout-button { margin-left: auto; align-self: center; } /* Корректируем положение кнопки выхода */
+    .order-card { padding: 16px; } /* Уменьшаем отступы в карточке */
+    /* Для маленьких экранов кнопки могут переноситься на новую строку */
+    .actions-container { flex-direction: column; }
 }
