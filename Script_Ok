@@ -1,211 +1,238 @@
+// --- КОНСТАНТЫ ОСТАЮТСЯ БЕЗ ИЗМЕНЕНИЙ ---
 const telegramBotToken = "7134836219:AAFOKRDl_f7_nft2Q52UxXFx244Gpqs7DPs";
 const chatId = "96609347";
 
-// Функция для расчета общей стоимости
-function calculateTotal() {
-    const monthlyPrice = document.getElementById('monthlyPrice').value;
-    const tireCount = document.getElementById('tireCount').value;
-    const totalPrice = monthlyPrice * tireCount;
-    document.getElementById('totalPrice').value = totalPrice;
-    generateQRCode();
-}
+let baseMonthlyPriceStorage = 0; // Базовая месячная цена хранения, до учета дисков
 
-// Функция для генерации номера договора
+// --- ФУНКЦИЯ ГЕНЕРАЦИИ НОМЕРА ДОГОВОРА ОСТАЕТСЯ БЕЗ ИЗМЕНЕНИЙ ---
 function generateContractNumber() {
     const currentDate = new Date();
-    const year = currentDate.getFullYear().toString().slice(-2); // Последние 2 цифры года
-    const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Месяц с ведущим нулем
-    const day = String(currentDate.getDate()).padStart(2, '0'); // День с ведущим нулем
-    const hour = String(currentDate.getHours()).padStart(2, '0'); // Часы с ведущим нулем
-    const minute = String(currentDate.getMinutes()).padStart(2, '0'); // Минуты с ведущим нулем
+    const year = currentDate.getFullYear().toString().slice(-2); // Последние две цифры года
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Месяц (01-12)
+    const day = String(currentDate.getDate()).padStart(2, '0'); // День (01-31)
+    const hour = String(currentDate.getHours()).padStart(2, '0'); // Час (00-23)
+    const minute = String(currentDate.getMinutes()).padStart(2, '0'); // Минута (00-59)
     return `${year}.${month}.${day}-${hour}${minute}`; // Формат: ГГ.ММ.ДД-ЧЧММ
 }
 
-// Устанавливаем текущую дату
-const today = new Date();
-const formattedDate = today.toISOString().split('T')[0];
-document.getElementById('startDate').value = formattedDate;
+// --- ФУНКЦИЯ ДЛЯ ВСЕХ РАСЧЕТОВ (ВОССТАНОВЛЕНА ИЗ ОРИГИНАЛА) ---
+function updateCalculations(eventSource) {
+    // Получение ссылок на необходимые поля ввода
+    const monthlyPriceInput = document.getElementById('monthlyPrice');
+    const storageDuration = parseInt(document.getElementById('storage').value) || 0; // Срок хранения в месяцах
+    const tireCount = parseInt(document.getElementById('tireCount').value) || 0; // Количество шин
+    const hasDisk = document.getElementById('hasDisk').value; // Наличие дисков ('Да'/'Нет')
+    const startDateInput = document.getElementById('startDate'); // Дата начала хранения
+    const endDateInput = document.getElementById('endDate'); // Дата окончания хранения
+    const reminderDateInput = document.getElementById('reminderDate'); // Дата напоминания
 
-// Функция для расчета дат
-function calculateDate() {
-    const tireCount = parseInt(document.getElementById('tireCount').value);
-    const startDate = new Date(document.getElementById('startDate').value);
-    const endDate = new Date(startDate);
-    endDate.setMonth(startDate.getMonth() + tireCount);
-    document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
+    const startDate = new Date(startDateInput.value); // Преобразование даты начала в объект Date
 
-    const reminderDate = new Date(endDate);
-    reminderDate.setDate(endDate.getDate() - 7);
-    document.getElementById('reminderDate').value = reminderDate.toISOString().split('T')[0];
-    generateQRCode();
-}
+    // Логика обновления цены "За месяц" с учетом дисков
+    // Если изменение вызвано полем "За месяц", обновляем базовую цену хранения.
+    if (eventSource === 'monthlyPriceInput') {
+        baseMonthlyPriceStorage = parseFloat(monthlyPriceInput.value) || 0;
+    }
 
-// Функция для генерации QR-кода
-function generateQRCode() {
-    const clientName = document.getElementById('clientName').value;
-    const phone = document.getElementById('phone').value;
-    const order = document.getElementById('order').value;
-    const monthlyPrice = document.getElementById('monthlyPrice').value;
-    const tireCount = document.getElementById('tireCount').value;
-    const hasDisk = document.getElementById('hasDisk').value;
-    const startDate = document.getElementById('startDate').value;
-    const endDate = document.getElementById('endDate').value;
-    const reminderDate = document.getElementById('reminderDate').value;
-    const storage = document.getElementById('storage').value;
-    const sezon = document.getElementById('seZon').value;
-    const totalPrice = document.getElementById('totalPrice').value;
-    const contractNumber = generateContractNumber();
-    const trafficSource = document.getElementById('trafficSource').value;
+    let effectiveMonthlyPrice = baseMonthlyPriceStorage;
+    // Если есть диски, добавляем 100 к месячной цене
+    if (hasDisk === 'Да') {
+        effectiveMonthlyPrice += 100;
+    }
 
-    document.getElementById('contractNumber').value = contractNumber;
+    // Обновляем поле "За месяц", если изменение не было инициировано самим полем "За месяц"
+    if (eventSource !== 'monthlyPriceInput') {
+        monthlyPriceInput.value = effectiveMonthlyPrice;
+    }
 
-    const noteText = `
-❱❱❱❱❱ ✅ КЛИЕНТ Otelshin.tu ✅ ❰❰❰❰❰
+    // Расчет даты окончания и даты напоминания
+    let currentEndDate;
+    // Если дата начала и срок хранения указаны
+    if (startDateInput.value && storageDuration > 0) {
+        const calculatedEndDate = new Date(startDate);
+        calculatedEndDate.setMonth(startDate.getMonth() + storageDuration); // Прибавляем месяцы
 
-${clientName} 
-📞${phone}
-
-Марка:❱❱ ${order}
-⭕: ❱❱ ${hasDisk} ❱❱ [${sezon}]
-
-⚡Хранение: [${tireCount}мес. ❱ ${startDate} ➽ ${endDate}
----------------
-💳 Сумма заказа: ${totalPrice} ${monthlyPrice}р/мес.]
-☎️ Напоминание об окончании срока: ${reminderDate} 📞
----------------
-Договор: ${contractNumber} (на сайте Otelshin.tu) | Склад: ${storage}
-Источник трафика: ${trafficSource}
-    `;
-
-    const vCardData = `
-BEGIN:VCARD
-VERSION:3.0
-N:${clientName};;;;
-FN:${clientName}
-TEL:${phone}
-NOTE:${noteText.replace(/\n/g, '\\n')}
-END:VCARD
-    `.trim();
-
-    const qrCanvas = document.getElementById('qrCanvas');
-    qrCanvas.width = 300;  // Устанавливаем ширину канваса
-    qrCanvas.height = 300; // Устанавливаем высоту канваса
-
-    QRCode.toCanvas(qrCanvas, vCardData, { width: 300 }, (error) => {
-        if (error) console.error("Ошибка генерации QR-кода:", error);
-    });
-
-    document.getElementById('qrContent').textContent = noteText;
-}
-
-// Функция для отправки данных в Telegram
-function sendToTelegram() {
-    const clientName = document.getElementById('clientName').value;
-    const phone = document.getElementById('phone').value;
-    const order = document.getElementById('order').value;
-    const monthlyPrice = document.getElementById('monthlyPrice').value;
-    const tireCount = document.getElementById('tireCount').value;
-    const hasDisk = document.getElementById('hasDisk').value;
-    const startDate = document.getElementById('startDate').value;
-    const endDate = document.getElementById('endDate').value;
-    const reminderDate = document.getElementById('reminderDate').value;
-    const storage = document.getElementById('storage').value;
-    const sezon = document.getElementById('seZon').value;
-    const totalPrice = document.getElementById('totalPrice').value;
-    const contractNumber = document.getElementById('contractNumber').value;
-    const trafficSource = document.getElementById('trafficSource').value;
-
-    const message = `
-❱❱❱❱❱ ✅ КЛИЕНТ Otelshin.tu ✅ ❰❰❰❰❰
-
-${clientName} 
-📞${phone}
-
-Марка:❱❱ ${order}
-⭕: ❱❱ ${hasDisk} ❱❱ [${sezon}]
-
-⚡Хранение: [${tireCount}мес. ❱ ${startDate} ➽ ${endDate}
----------------
-💳 Сумма заказа: ${totalPrice} ${monthlyPrice}р/мес.]
-☎️ Напоминание об окончании срока: ${reminderDate} 📞
----------------
-Договор: ${contractNumber} (на сайте Otelshin.tu) | Склад: ${storage}
-Источник трафика: ${trafficSource}
-    `;
-
-    // Создаем временный canvas для QR-кода большего размера
-    const tempQrCanvas = document.createElement('canvas');
-    tempQrCanvas.width = 500;
-    tempQrCanvas.height = 500;
-
-    const vCardData = `
-BEGIN:VCARD
-VERSION:3.0
-N:${clientName};;;;
-FN:${clientName}
-TEL:${phone}
-NOTE:${message.replace(/\n/g, '\\n')}
-END:VCARD
-    `.trim();
-
-    QRCode.toCanvas(tempQrCanvas, vCardData, { width: 500 }, (error) => {
-        if (error) {
-            console.error("Ошибка генерации QR-кода:", error);
-            return;
+        // Если поле "Окончание" пустое ИЛИ изменение вызвано "Началом" / "Сроком хранения",
+        // то обновляем поле "Окончание" автоматически.
+        if (!endDateInput.value || eventSource === 'startDate' || eventSource === 'storage') {
+            endDateInput.value = calculatedEndDate.toISOString().split('T')[0]; // Устанавливаем рассчитанную дату
         }
+    }
+    
+    // Используем значение из поля "Окончание" (автоматическое или вручную введенное)
+    // для расчета даты напоминания.
+    currentEndDate = new Date(endDateInput.value);
 
-        const dataURL = tempQrCanvas.toDataURL('image/png');
-        sendImageWithCaption(dataURL, message);
+    // Если дата окончания валидна, рассчитываем дату напоминания (за 7 дней до окончания)
+    if (currentEndDate && !isNaN(currentEndDate.getTime())) {
+        const reminderDate = new Date(currentEndDate);
+        reminderDate.setDate(currentEndDate.getDate() - 7); // Вычитаем 7 дней
+        reminderDateInput.value = reminderDate.toISOString().split('T')[0]; // Устанавливаем дату напоминания
+    } else {
+        reminderDateInput.value = ''; // Очищаем, если дата окончания невалидна
+    }
+
+    // Расчет общей суммы
+    const tireSets = Math.ceil(tireCount / 4); // Количество комплектов шин (округляем в большую сторону)
+    const totalPrice = effectiveMonthlyPrice * storageDuration * tireSets; // Общая сумма
+
+    // Обновляем поле "Общая сумма"
+    document.getElementById('totalPrice').value = Math.round(totalPrice);
+
+    // Контрактный номер обновляется напрямую при любом изменении
+    document.getElementById('contractNumber').value = generateContractNumber();
+}
+
+
+// --- ФУНКЦИЯ ОТПРАВКИ ТЕКСТОВОГО СООБЩЕНИЯ В TELEGRAM (ОБНОВЛЕНА) ---
+function sendToTelegram() {
+    // --- 1. Сбор данных из полей формы ---
+    // Данные клиента
+    const clientName = document.getElementById('clientName').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    // Ищем поле адреса по placeholder'у, так как у него нет ID
+    const address = document.querySelector('.user-info input[placeholder="Улица, №-дома "]').value.trim();
+
+    // Детали услуги
+    const carNumber = document.getElementById('car-number-input').value.trim(); // Номер Авто
+    const tireCount = document.getElementById('tireCount').value.trim();
+    const hasDisk = document.getElementById('hasDisk').value.trim();
+    const sezon = document.getElementById('seZon').value.trim();
+    const orderCode = document.getElementById('order').value.trim(); // Код склада/заказа
+    // Ищем поле ячейки по placeholder'у, так как у него нет ID
+    const cellCode = document.querySelector('.tag.tag-location input[placeholder="E-45"]').value.trim();
+    const additionalNotes = document.getElementById('qrContent').value.trim(); // Содержание QR/дополнительные заметки
+
+    // Финансовая информация и даты
+    const storageDuration = document.getElementById('storage').value.trim(); // Срок хранения
+    const monthlyPrice = document.getElementById('monthlyPrice').value.trim();
+    const totalPrice = document.getElementById('totalPrice').value.trim();
+    // Ищем поле долга по классу, так как у него нет ID
+    const debt = document.querySelector('.info-row .value.debt .editable').value.trim();
+    const contractNumber = document.getElementById('contractNumber').value.trim();
+    const trafficSource = document.getElementById('trafficSource').value.trim(); // Источник трафика
+
+    // Даты для форматирования
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    const reminderDate = document.getElementById('reminderDate').value;
+
+    // Форматирование дат для читабельного вывода
+    const formattedStartDate = startDate ? new Date(startDate).toLocaleDateString('ru-RU') : 'Не указана';
+    const formattedEndDate = endDate ? new Date(endDate).toLocaleDateString('ru-RU') : 'Не указана';
+    const formattedReminderDate = reminderDate ? new Date(reminderDate).toLocaleDateString('ru-RU') : 'Не указана';
+
+    // --- 2. Формирование сообщения для Telegram ---
+    let message = `
+❱❱❱❱❱ ✅ КЛИЕНТ Otelshin.tu ✅ ❰❰❰❰❰
+------------------------------------------
+<b> ${clientName || 'Не указано'} </b>
+📞 ${phone || 'Не указан'}
+🚗 Номер Авто:<b>  ${carNumber || 'Не указан'}</b>
+📍 <b>Адрес:</b> <code> ${address || 'Не указан'} </code>
+--- ---- ---- ---- ------ ---- ---- ---- ---
+-    -    -     <b>ДЕТЕЛИ УСЛУГИ</b>    -    -    -
+--- ---- ---- ---- ------ ---- ---- ---- ---
+<blockquote>⭕️ ${additionalNotes || 'Нет дополнительных заметок.'}
+Кол-во шин: <b>${tireCount || '0'} шт.</b> Сезон: <b>${sezon || 'Не указан'}</b> 
+🛞 <b>Диски:</b> ${hasDisk || 'Нет'} </blockquote>
+--- ---- ---- ---- ------ ---- ---- ---- ---
+<blockquote>📦 <b>Склад:</b> ${orderCode || 'Не указан'}
+⚡️ Хранение: <b>${storageDuration || '0'} мес.</b> ❱ ${formattedStartDate} ➽ ${formattedEndDate}
+🔔 Напоминание об окончании срока:<b> ${formattedReminderDate}</b></blockquote>
+--- ---- ---- ---- ------ ---- ---- ---- ---
+<blockquote>💳Сумма заказа: <b>${totalPrice || '0'} ₽</b> [${monthlyPrice || '0'} ₽/мес.]
+🚨 <b>Долг:</b> ${debt || '0'} ₽</blockquote>
+------------------------------------------
+🌐 <i>Источник:</i> <span class="tg-spoiler"> ${trafficSource || 'Не указан'} </span>
+❱❱❱ Договор: <b>${contractNumber || 'Не сгенерирован'}</b> <a href="https://otelshin.ru">на сайте</a> ❰❰❰
+    `;
+
+    // Отправляем сообщение в Telegram (только текст)
+    sendMessageToTelegram(message);
+}
+
+// --- НОВАЯ ФУНКЦИЯ: ОТПРАВКА ТЕКСТОВОГО СООБЩЕНИЯ В TELEGRAM API ---
+function sendMessageToTelegram(message) {
+    const url = `https://api.telegram.org/bot${telegramBotToken}/sendMessage`;
+    const params = {
+        chat_id: chatId,
+        text: message,
+        parse_mode: 'HTML' // Использование HTML-разметки для жирного текста (<b>)
+    };
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(params)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.ok) {
+            alert('Заказ успешно отправлен в Telegram!');
+            // Очистка полей формы после успешной отправки (опционально)
+            // document.getElementById('clientName').value = '';
+            // и т.д.
+        } else {
+            alert('Ошибка при отправке заказа в Telegram: ' + data.description);
+            console.error('Telegram API error:', data.description);
+        }
+    })
+    .catch(error => {
+        console.error('Ошибка отправки в Telegram:', error);
+        alert('Произошла ошибка при отправке заказа в Telegram. Проверьте консоль для деталей.');
     });
 }
 
-// Функция для отправки изображения с подписью в Telegram
-function sendImageWithCaption(dataURL, caption) {
-    fetch(dataURL)
-        .then(res => res.blob())
-        .then(blob => {
-            const formData = new FormData();
-            formData.append('chat_id', chatId);
-            formData.append('photo', blob, 'qrcode.png');
-            formData.append('caption', caption);
-
-            return fetch(`https://api.telegram.org/bot${telegramBotToken}/sendPhoto`, {
-                method: 'POST',
-                body: formData
-            });
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.ok) {
-                alert('QR-код с описанием успешно отправлен в Telegram!');
-            } else {
-                alert('Ошибка при отправке QR-кода в Telegram: ' + data.description);
-            }
-        })
-        .catch(error => {
-            console.error('Ошибка отправки в Telegram:', error);
-            alert('Произошла ошибка при отправке QR-кода в Telegram.');
-        });
-}
-
-// Инициализация при загрузке страницы
+// --- БЛОК ИНИЦИАЛИЗАЦИИ ПРИ ЗАГРУЗКЕ СТРАНИЦЫ ---
 window.onload = () => {
-    calculateDate();
-    generateQRCode();
+    // Инициализация маски для номера телефона
+    const phoneInput = document.getElementById('phone');
+    if (phoneInput) {
+        IMask(phoneInput, {
+            mask: '+{7} (000) 000-00-00'
+        });
+    }
 
-    const inputs = document.querySelectorAll('input, select');
-    inputs.forEach(input => {
-        input.addEventListener('input', generateQRCode);
-        input.addEventListener('change', generateQRCode);
+    // Установка текущей даты в поле "Начало" при загрузке страницы
+    const today = new Date();
+    const formattedDate = today.toISOString().split('T')[0];
+    document.getElementById('startDate').value = formattedDate;
+
+    // Инициализация базовой месячной цены хранения
+    baseMonthlyPriceStorage = parseFloat(document.getElementById('monthlyPrice').value) || 0;
+
+    // Список элементов, изменения в которых должны вызывать пересчет
+    const calculationInputs = [
+        document.getElementById('storage'),
+        document.getElementById('tireCount'),
+        document.getElementById('hasDisk'),
+        document.getElementById('startDate'),
+        document.getElementById('endDate') // Добавляем endDate, т.к. его изменение влияет на reminderDate
+    ];
+
+    // Добавление слушателей событий для автоматического пересчета
+    calculationInputs.forEach(input => {
+        if (input) {
+            input.addEventListener('input', (e) => updateCalculations(e.target.id));
+            input.addEventListener('change', (e) => updateCalculations(e.target.id));
+        }
     });
 
-    document.getElementById('showQrContent').addEventListener('click', () => {
-        const qrContent = document.getElementById('qrContent');
-        qrContent.style.display = qrContent.style.display === 'none' ? 'block' : 'none';
-    });
+    // Отдельный слушатель для поля "За месяц", чтобы оно могло быть источником базовой цены
+    const monthlyPriceInput = document.getElementById('monthlyPrice');
+    if (monthlyPriceInput) {
+        monthlyPriceInput.addEventListener('input', () => updateCalculations('monthlyPriceInput'));
+    }
+   
+    // Первоначальный расчет при загрузке страницы
+    updateCalculations('init');
+
+    // Привязка функции sendToTelegram к кнопке "Оформить"
+    const sendButton = document.querySelector('.action-button');
+    if(sendButton){
+        sendButton.addEventListener('click', sendToTelegram);
+    }
 };
-
-// Добавляем обработчики событий
-document.getElementById('tireCount').addEventListener('input', calculateDate);
-document.getElementById('monthlyPrice').addEventListener('change', calculateTotal);
-document.getElementById('startDate').addEventListener('change', calculateDate);
