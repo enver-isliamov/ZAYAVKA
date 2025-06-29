@@ -1,6 +1,6 @@
 // --- КОНСТАНТЫ ПРОЕКТА ---
 // Токен вашего Telegram бота. В реальных проектах это должно храниться на сервере, а не в клиенте.
-const telegramBotToken = "7134836219:AAFOKRDl_f7_nft2Q52UxXFx244Gpqs7DPs";
+const telegramBotToken = "7134836219:AAFOKRDl_f7_nft2Q52UxXFx244Gpqs7DPs"; // @KopchekBot
 // ID чата Telegram, куда будут отправляться сообщения.
 const chatId = "96609347";
 
