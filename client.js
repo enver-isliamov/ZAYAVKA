@@ -46,7 +46,7 @@ function sendFormSecurely() {
         message: formatTelegramMessage(data)
     };
 
-    fetch('https://<PROJECT_ID>.functions.supabase.co/send-form', {
+    fetch('https://tzkehqpiyzddzvnwxhez.supabase.co/functions/v1/send-form', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
