@@ -1,4 +1,4 @@
- // --- КОНСТАНТЫ ПРОЕКТА ---
+// --- КОНСТАНТЫ ПРОЕКТА ---
 // Токен @KopchekBot Telegram бота. В реальных проектах это должно храниться на сервере, а не в клиенте.
 const telegramBotToken = "7134836219:AAFOKRDl_f7_nft2Q52UxXFx244Gpqs7DPs"; 
 // ID чата Telegram, куда будут отправляться сообщения.
@@ -7,7 +7,7 @@ const chatId = "96609347";
 // URL веб-приложения Google Apps Script, которое обрабатывает запись в Google Таблицу.
 // ОЧЕНЬ ВАЖНО: Замените этот плейсхолдер на фактический URL, полученный после развертывания Apps Script.
 // Пример: 'https://script.google.com/macros/s/AKfycbzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz/exec';
-const googleSheetsWebAppURL = 'https://script.google.com/macros/s/AKfycbz-_ro4L5M9teLjYn3_Rid866MD0QkdYBW7wT3YIXXvFqHIEU2KEgYiD0zqBXTp4wXoUQ/exec'; 
+const googleSheetsWebAppURL = 'https://script.google.com/macros/s/AKfycbyQKiWT_9Gny27UMex3zFZvP-LHOOnIY_FAYlfP49KcjRX0pXXnL_U7VYiWCCRaHzBctQ/exec'; 
 
 // Базовая месячная цена хранения, до учета дисков. Инициализируется при загрузке страницы.
 let baseMonthlyPriceStorage = 0; 
@@ -111,7 +111,7 @@ function collectFormData() {
     const carNumber = document.getElementById('car-number-input').value.trim();
     const tireCount = document.getElementById('tireCount').value.trim();
     const hasDisk = document.getElementById('hasDisk').value.trim();
-    const sezon = document.getElementById('seZon').value.trim(); // Добавлено поле Сезон
+    const sezon = document.getElementById('seZon').value.trim();
     const orderCode = document.getElementById('order').value.trim(); // Код склада/заказа
     // Ищем поле ячейки по placeholder'у, так как у него нет ID.
     const cellCode = document.querySelector('.tag.tag-location input[placeholder="E-45"]')?.value.trim() || '';
@@ -122,10 +122,7 @@ function collectFormData() {
     const monthlyPrice = document.getElementById('monthlyPrice').value.trim();
     const totalPrice = document.getElementById('totalPrice').value.trim();
     // Ищем поле долга по классу, так как у него нет ID.
-    // Если поле editable отсутствует или пустое, по умолчанию устанавливаем '0'.
-    const debtElement = document.querySelector('.info-row .value.debt .editable');
-    const debt = debtElement ? debtElement.value.trim() : '0'; 
-
+    const debt = document.querySelector('.info-row .value.debt .editable')?.value.trim() || '0'; // Значение по умолчанию '0'
     const contractNumber = document.getElementById('contractNumber').value.trim();
     const trafficSource = document.getElementById('trafficSource').value.trim(); // Источник трафика
 
@@ -228,10 +225,9 @@ function sendMessageToTelegram(message) {
 // Принимает объект с данными, собранными из формы, и отправляет его в Google Apps Script.
 function sendToGoogleSheets(data) {
     // Проверка, настроен ли URL для Google Sheets Web App.
-    // Обновите это условие, если вы уже вставили реальный URL.
-    if (!googleSheetsWebAppURL || googleSheetsWebAppURL === 'https://script.google.com/macros/s/AKfycbyQKiWT_9Gny27UMex3zFZvP-LHOOnIY_FAYlfP49KcjRX0pXXnL_U7VYiWCCRaHzBctQ/exec' || googleSheetsWebAppURL.includes('ВСТАВЬТЕ_СЮДА_URL')) {
-        console.error('Google Apps Script Web App URL не настроен или используется плейсхолдер. Данные в таблицу не будут отправлены.');
-        alert('Ошибка: URL для Google Таблицы не настроен. Пожалуйста, обратитесь к администратору или настройте его.');
+    if (!googleSheetsWebAppURL || googleSheetsWebAppURL === 'ВСТАВЬТЕ_СЮДА_URL_ИЗ_GOOGLE_APPS_SCRIPT') {
+        console.error('Google Apps Script Web App URL не настроен. Данные в таблицу не будут отправлены.');
+        alert('Ошибка: URL для Google Таблицы не настроен. Пожалуйста, обратитесь к администратору.');
         return;
     }
 
@@ -248,7 +244,6 @@ function sendToGoogleSheets(data) {
         monthlyPrice: data.monthlyPrice,
         tireCount: data.tireCount,
         hasDisk: data.hasDisk,
-        sezon: data.sezon, // Добавлено поле Сезон
         startDate: data.startDate, 
         storageDuration: data.storageDuration,
         reminderDate: data.reminderDate, 
@@ -258,6 +253,7 @@ function sendToGoogleSheets(data) {
         totalPrice: data.totalPrice,
         debt: data.debt,
         contractNumber: data.contractNumber,
+        // Поле 'sezon' отсутствует в вашей схеме Google Таблицы, поэтому не включаем его в payload.
         trafficSource: data.trafficSource 
     };
 
