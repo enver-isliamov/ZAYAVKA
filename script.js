@@ -4,10 +4,10 @@ const telegramBotToken = "7134836219:AAFOKRDl_f7_nft2Q52UxXFx244Gpqs7DPs";
 // ID чата Telegram, куда будут отправляться сообщения.
 const chatId = "96609347";
 
-// !!! ВСТАВЬТЕ СЮДА АКТУАЛЬНЫЙ URL ВАШЕГО РАЗВЕРНУТОГО GOOGLE APPS SCRIPT ВЕБ-ПРИЛОЖЕНИЯ !!!
-// Этот URL вы получите после развертывания скрипта как веб-приложения.
-// Убедитесь, что он ТОЧНО совпадает с тем, что Google вам дал.
-const googleSheetsWebAppURL = https://script.google.com/macros/s/AKfycbz-_ro4L5M9teLjYn3_Rid866MD0QkdYBW7wT3YIXXvFqHIEU2KEgYiD0zqBXTp4wXoUQ/exec'; 
+// URL веб-приложения Google Apps Script, которое обрабатывает запись в Google Таблицу.
+// ОЧЕНЬ ВАЖНО: Замените этот плейсхолдер на фактический URL, полученный после развертывания Apps Script.
+// Пример: 'https://script.google.com/macros/s/AKfycbzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz/exec';
+const googleSheetsWebAppURL = 'https://script.google.com/macros/s/AKfycbz-_ro4L5M9teLjYn3_Rid866MD0QkdYBW7wT3YIXXvFqHIEU2KEgYiD0zqBXTp4wXoUQ/exec'; 
 
 // Базовая месячная цена хранения, до учета дисков. Инициализируется при загрузке страницы.
 let baseMonthlyPriceStorage = 0; 
@@ -96,14 +96,16 @@ function updateCalculations(eventSource) {
     document.getElementById('contractNumber').value = generateContractNumber();
 }
 
-// --- ФУНКЦИЯ: СБОР ВСЕХ ДАННЫХ ИЗ ФОРМЫ В ЕДИНЫЙ ОБЪЕКТ ---
+// --- НОВАЯ ФУНКЦИЯ: СБОР ВСЕХ ДАННЫХ ИЗ ФОРМЫ В ЕДИНЫЙ ОБЪЕКТ ---
 // Эта функция собирает все необходимые данные из полей формы и возвращает их в виде объекта.
 // Это позволяет избежать дублирования кода при отправке данных в разные системы (Telegram, Google Sheets).
 function collectFormData() {
     // Данные клиента
     const clientName = document.getElementById('clientName').value.trim();
     const phone = document.getElementById('phone').value.trim();
-    const address = document.getElementById('addressInput')?.value.trim() || ''; 
+    // Ищем поле адреса по placeholder'у, так как у него нет ID.
+    // Используем опциональную цепочку (?.) и значение по умолчанию (''), чтобы избежать ошибок, если элемент не найден.
+    const address = document.querySelector('.user-info input[placeholder="Улица, №-дома "]')?.value.trim() || ''; 
 
     // Детали услуги
     const carNumber = document.getElementById('car-number-input').value.trim();
@@ -111,14 +113,16 @@ function collectFormData() {
     const hasDisk = document.getElementById('hasDisk').value.trim();
     const sezon = document.getElementById('seZon').value.trim();
     const orderCode = document.getElementById('order').value.trim(); // Код склада/заказа
-    const cellCode = document.getElementById('cellCodeInput')?.value.trim() || '';
+    // Ищем поле ячейки по placeholder'у, так как у него нет ID.
+    const cellCode = document.querySelector('.tag.tag-location input[placeholder="E-45"]')?.value.trim() || '';
     const additionalNotes = document.getElementById('qrContent').value.trim(); // Содержание QR/дополнительные заметки
 
     // Финансовая информация и даты
     const storageDuration = document.getElementById('storage').value.trim(); // Срок хранения
     const monthlyPrice = document.getElementById('monthlyPrice').value.trim();
     const totalPrice = document.getElementById('totalPrice').value.trim();
-    const debt = document.getElementById('debtInput')?.value.trim() || '0'; // Значение по умолчанию '0'
+    // Ищем поле долга по классу, так как у него нет ID.
+    const debt = document.querySelector('.info-row .value.debt .editable')?.value.trim() || '0'; // Значение по умолчанию '0'
     const contractNumber = document.getElementById('contractNumber').value.trim();
     const trafficSource = document.getElementById('trafficSource').value.trim(); // Источник трафика
 
@@ -203,11 +207,12 @@ function sendMessageToTelegram(message) {
     .then(response => response.json())
     .then(data => {
         if (data.ok) {
-            console.log('Сообщение успешно отправлено в Telegram.');
-            // alert('Заказ успешно отправлен в Telegram!'); // Можно раскомментировать для визуального подтверждения
+            alert('Заказ успешно отправлен в Telegram!');
+            // Опционально: можно добавить очистку полей формы здесь после успешной отправки
+            // Например: document.getElementById('clientName').value = '';
         } else {
-            console.error('Ошибка при отправке заказа в Telegram:', data.description);
             alert('Ошибка при отправке заказа в Telegram: ' + data.description);
+            console.error('Telegram API error:', data.description);
         }
     })
     .catch(error => {
@@ -216,42 +221,59 @@ function sendMessageToTelegram(message) {
     });
 }
 
-// --- ФУНКЦИЯ: ОТПРАВКА ДАННЫХ В GOOGLE ТАБЛИЦУ ЧЕРЕЗ APPS SCRIPT WEB APP ---
+// --- НОВАЯ ФУНКЦИЯ: ОТПРАВКА ДАННЫХ В GOOGLE ТАБЛИЦУ ЧЕРЕЗ APPS SCRIPT WEB APP ---
 // Принимает объект с данными, собранными из формы, и отправляет его в Google Apps Script.
 function sendToGoogleSheets(data) {
     // Проверка, настроен ли URL для Google Sheets Web App.
-    if (!googleSheetsWebAppURL || googleSheetsWebAppURL === 'https://script.google.com/macros/s/AKfycbx0OxRjDOb5xaGBhvoANyLqanlKe-LWHtLkT_dyXEZkyBnNziZrJQNrWvwyi2pLztvAjg/exec') {
+    if (!googleSheetsWebAppURL || googleSheetsWebAppURL === 'ВСТАВЬТЕ_СЮДА_URL_ИЗ_GOOGLE_APPS_SCRIPT') {
         console.error('Google Apps Script Web App URL не настроен. Данные в таблицу не будут отправлены.');
         alert('Ошибка: URL для Google Таблицы не настроен. Пожалуйста, обратитесь к администратору.');
         return;
     }
 
-    // Подготовка данных для отправки в формате x-www-form-urlencoded
-    // Создаем новый объект URLSearchParams из нашего объекта data.
-    // Это автоматически форматирует данные как key1=value1&key2=value2
-    const encodedData = new URLSearchParams(data).toString();
+    // Подготовка объекта payload для отправки.
+    // Ключи в этом объекте должны ТОЧНО совпадать с ключами, которые ожидает функция doPost
+    // в вашем Google Apps Script для корректного маппинга данных в столбцы.
+    // Даты отправляются в формате YYYY-MM-DD, что Google Таблицы хорошо понимают.
+    const payload = {
+        clientName: data.clientName,
+        phone: data.phone,
+        address: data.address,
+        carNumber: data.carNumber,
+        additionalNotes: data.additionalNotes,
+        monthlyPrice: data.monthlyPrice,
+        tireCount: data.tireCount,
+        hasDisk: data.hasDisk,
+        startDate: data.startDate, 
+        storageDuration: data.storageDuration,
+        reminderDate: data.reminderDate, 
+        endDate: data.endDate, 
+        orderCode: data.orderCode,
+        cellCode: data.cellCode,
+        totalPrice: data.totalPrice,
+        debt: data.debt,
+        contractNumber: data.contractNumber,
+        // Поле 'sezon' отсутствует в вашей схеме Google Таблицы, поэтому не включаем его в payload.
+        trafficSource: data.trafficSource 
+    };
 
     fetch(googleSheetsWebAppURL, {
-        method: 'POST', 
-        // Важно: меняем Content-Type на application/x-www-form-urlencoded
+        method: 'POST', // Метод POST для отправки данных
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded' 
+            'Content-Type': 'application/json' // Важно: указываем, что тело запроса - это JSON
         },
-        body: encodedData // Отправляем закодированные данные
+        body: JSON.stringify(payload) // Преобразуем JavaScript объект в JSON строку
     })
-    .then(response => {
-        // Поскольку теперь это "простой" запрос, браузер может не дать доступ к полному ответу.
-        // Поэтому мы не можем надежно парсить response.json() и проверять result.success.
-        // Просто логируем, что запрос был отправлен.
-        console.log('Запрос в Google Таблицу отправлен (без проверки ответа из-за CORS).');
-        alert('Заявка успешно отправлена! (Проверьте Google Таблицу)'); 
-        // В случае успеха можно опционально очистить форму.
-        // resetForm(); 
-        
-        // Если вы видите эту проблему, то response.json() может вызвать ошибку.
-        // Если вам все еще нужен ответ, то это сложнее и потребует обходных путей.
-        // Возвращаем пустой промис, чтобы цепочка .then не ругалась на отсутствие JSON.
-        return Promise.resolve({}); 
+    .then(response => response.json()) // Парсим ответ от Apps Script как JSON
+    .then(result => {
+        if (result.success) {
+            console.log('Данные успешно отправлены в Google Таблицу:', result.message);
+            // Можно добавить alert, если хотите визуальное подтверждение на странице
+            // alert('Данные успешно отправлены в Google Таблицу!'); 
+        } else {
+            console.error('Ошибка при отправке данных в Google Таблицу:', result.error);
+            alert('Произошла ошибка при отправке данных в Google Таблицу: ' + result.error);
+        }
     })
     .catch(error => {
         console.error('Произошла сетевая ошибка при отправке данных в Google Таблицу:', error);
