@@ -1,4 +1,7 @@
-// Сбор данных из формы, как раньше
+// === client.js ===
+// Этот код подключается на клиенте и безопасно отправляет данные через Supabase Edge Function
+
+// --- Функция сбора всех данных из формы ---
 function collectFormData() {
     const get = (id) => document.getElementById(id)?.value.trim() || '';
     const getPlaceholder = (placeholder) => document.querySelector(`input[placeholder="${placeholder}"]`)?.value.trim() || '';
@@ -34,18 +37,23 @@ function collectFormData() {
     };
 }
 
+// --- Формирование HTML-сообщения для Telegram ---
 function formatTelegramMessage(data) {
     return `
 ❱❱❱❱❱ ✅ КЛИЕНТ Otelshin.tu ✅ ❰❰❰❰❰\n------------------------------------------\n<b> ${data.clientName || 'Не указано'} </b>\n📞 ${data.phone || 'Не указан'}\n🚗 Номер Авто:<b>  ${data.carNumber || 'Не указан'}</b>\n📍 <b>Адрес:</b> <code> ${data.address || 'Не указан'} </code>\n--- ---- ---- ---- ------ ---- ---- ---- ---\n-    -    -     <b>ДЕТЕЛИ УСЛУГИ</b>    -    -    -\n--- ---- ---- ---- ------ ---- ---- ---- ---\n<blockquote>⭕️ ${data.additionalNotes || 'Нет дополнительных заметок.'}\nКол-во шин: <b>${data.tireCount || '0'} шт.</b> Сезон: <b>${data.sezon || 'Не указан'}</b>\n🛞 <b>Диски:</b> ${data.hasDisk || 'Нет'} </blockquote>\n--- ---- ---- ---- ------ ---- ---- ---- ---\n<blockquote>📦 <b>Склад:</b> ${data.orderCode || 'Не указан'}\n⚡️ Хранение: <b>${data.storageDuration || '0'} мес.</b> ❱ ${data.formattedStartDate} ➽ ${data.formattedEndDate}\n🔔 Напоминание об окончании срока:<b> ${data.formattedReminderDate}</b></blockquote>\n--- ---- ---- ---- ------ ---- ---- ---- ---\n<blockquote>💳Сумма заказа: <b>${data.totalPrice || '0'} ₽</b> [${data.monthlyPrice || '0'} ₽/мес.]\n🚨 <b>Долг:</b> ${data.debt || '0'} ₽</blockquote>\n------------------------------------------\n🌐 <i>Источник:</i> <span class="tg-spoiler"> ${data.trafficSource || 'Не указан'} </span>\n❱❱❱ Договор: <b>${data.contractNumber || 'Не сгенерирован'}</b> <a href="https://otelshin.ru">на сайте</a> ❰❰❰`;
 }
 
+// --- Отправка данных в Supabase Edge Function ---
 function sendFormSecurely() {
     const data = collectFormData();
+
+    // Собираем всё в один объект, включая текстовое сообщение
     const fullPayload = {
         ...data,
         message: formatTelegramMessage(data)
     };
 
+    // Отправляем данные на Edge Function Supabase
     fetch('https://tzkehqpiyzddzvnwxhez.supabase.co/functions/v1/send-form', {
         method: 'POST',
         headers: {
@@ -68,7 +76,7 @@ function sendFormSecurely() {
     });
 }
 
-// Привязка к кнопке оформления
+// --- Запуск при загрузке страницы ---
 window.onload = () => {
     const sendButton = document.querySelector('.action-button');
     if (sendButton) {
