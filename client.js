@@ -1,85 +1,81 @@
-// === client.js ===
-// Этот код подключается на клиенте и безопасно отправляет данные через Supabase Edge Function
-
-// --- Функция сбора всех данных из формы ---
+// client.js
 function collectFormData() {
-    const get = (id) => document.getElementById(id)?.value.trim() || '';
-    const getPlaceholder = (placeholder) => document.querySelector(`input[placeholder="${placeholder}"]`)?.value.trim() || '';
-    const getByClass = (selector) => document.querySelector(selector)?.value.trim() || '0';
+  const get = id => document.getElementById(id)?.value.trim() || '';
+  const getByPlaceholder = placeholder => document.querySelector(`input[placeholder="${placeholder}"]`)?.value.trim() || '';
+  const getByClass = selector => document.querySelector(selector)?.value.trim() || '0';
 
-    const startDate = get('startDate');
-    const endDate = get('endDate');
-    const reminderDate = get('reminderDate');
+  const startDate = get('startDate');
+  const endDate = get('endDate');
+  const reminderDate = get('reminderDate');
 
-    return {
-        clientName: get('clientName'),
-        phone: get('phone'),
-        address: getPlaceholder('Улица, №-дома '),
-        carNumber: get('car-number-input'),
-        tireCount: get('tireCount'),
-        hasDisk: get('hasDisk'),
-        sezon: get('seZon'),
-        orderCode: get('order'),
-        cellCode: getPlaceholder('E-45'),
-        additionalNotes: get('qrContent'),
-        storageDuration: get('storage'),
-        monthlyPrice: get('monthlyPrice'),
-        totalPrice: get('totalPrice'),
-        debt: getByClass('.info-row .value.debt .editable'),
-        contractNumber: get('contractNumber'),
-        trafficSource: get('trafficSource'),
-        startDate,
-        endDate,
-        reminderDate,
-        formattedStartDate: startDate ? new Date(startDate).toLocaleDateString('ru-RU') : 'Не указана',
-        formattedEndDate: endDate ? new Date(endDate).toLocaleDateString('ru-RU') : 'Не указана',
-        formattedReminderDate: reminderDate ? new Date(reminderDate).toLocaleDateString('ru-RU') : 'Не указана'
-    };
+  return {
+    clientName: get('clientName'),
+    phone: get('phone'),
+    address: getByPlaceholder('Улица, №-дома '),
+    carNumber: get('car-number-input'),
+    tireCount: get('tireCount'),
+    hasDisk: get('hasDisk'),
+    sezon: get('seZon'),
+    orderCode: get('order'),
+    cellCode: getByPlaceholder('E-45'),
+    additionalNotes: get('qrContent'),
+    storageDuration: get('storage'),
+    monthlyPrice: get('monthlyPrice'),
+    totalPrice: get('totalPrice'),
+    debt: getByClass('.info-row .value.debt .editable'),
+    contractNumber: get('contractNumber'),
+    trafficSource: get('trafficSource'),
+    startDate,
+    endDate,
+    reminderDate,
+    formattedStartDate: startDate ? new Date(startDate).toLocaleDateString('ru-RU') : 'Не указана',
+    formattedEndDate: endDate ? new Date(endDate).toLocaleDateString('ru-RU') : 'Не указана',
+    formattedReminderDate: reminderDate ? new Date(reminderDate).toLocaleDateString('ru-RU') : 'Не указана',
+  };
 }
 
-// --- Формирование HTML-сообщения для Telegram ---
 function formatTelegramMessage(data) {
-    return `
-❱❱❱❱❱ ✅ КЛИЕНТ Otelshin.tu ✅ ❰❰❰❰❰\n------------------------------------------\n<b> ${data.clientName || 'Не указано'} </b>\n📞 ${data.phone || 'Не указан'}\n🚗 Номер Авто:<b>  ${data.carNumber || 'Не указан'}</b>\n📍 <b>Адрес:</b> <code> ${data.address || 'Не указан'} </code>\n--- ---- ---- ---- ------ ---- ---- ---- ---\n-    -    -     <b>ДЕТЕЛИ УСЛУГИ</b>    -    -    -\n--- ---- ---- ---- ------ ---- ---- ---- ---\n<blockquote>⭕️ ${data.additionalNotes || 'Нет дополнительных заметок.'}\nКол-во шин: <b>${data.tireCount || '0'} шт.</b> Сезон: <b>${data.sezon || 'Не указан'}</b>\n🛞 <b>Диски:</b> ${data.hasDisk || 'Нет'} </blockquote>\n--- ---- ---- ---- ------ ---- ---- ---- ---\n<blockquote>📦 <b>Склад:</b> ${data.orderCode || 'Не указан'}\n⚡️ Хранение: <b>${data.storageDuration || '0'} мес.</b> ❱ ${data.formattedStartDate} ➽ ${data.formattedEndDate}\n🔔 Напоминание об окончании срока:<b> ${data.formattedReminderDate}</b></blockquote>\n--- ---- ---- ---- ------ ---- ---- ---- ---\n<blockquote>💳Сумма заказа: <b>${data.totalPrice || '0'} ₽</b> [${data.monthlyPrice || '0'} ₽/мес.]\n🚨 <b>Долг:</b> ${data.debt || '0'} ₽</blockquote>\n------------------------------------------\n🌐 <i>Источник:</i> <span class="tg-spoiler"> ${data.trafficSource || 'Не указан'} </span>\n❱❱❱ Договор: <b>${data.contractNumber || 'Не сгенерирован'}</b> <a href="https://otelshin.ru">на сайте</a> ❰❰❰`;
+  return `
+<b>${data.clientName || 'Не указано'}</b>
+📞 ${data.phone || 'Не указан'}
+🚗 ${data.carNumber || 'Не указан'}
+📍 Адрес: ${data.address}
+🛞 Кол-во шин: ${data.tireCount || '0'} | Диски: ${data.hasDisk || 'Нет'}
+📦 Склад: ${data.orderCode} | Срок: ${data.storageDuration} мес
+💰 Сумма: ${data.totalPrice} ₽ | Долг: ${data.debt} ₽
+Договор: ${data.contractNumber}
+`;
 }
 
-// --- Отправка данных в Supabase Edge Function ---
 function sendFormSecurely() {
-    const data = collectFormData();
+  const data = collectFormData();
+  const payload = {
+    ...data,
+    message: formatTelegramMessage(data),
+  };
 
-    // Собираем всё в один объект, включая текстовое сообщение
-    const fullPayload = {
-        ...data,
-        message: formatTelegramMessage(data)
-    };
-
-    // Отправляем данные на Edge Function Supabase
-    fetch('https://tzkehqpiyzddzvnwxhez.supabase.co/functions/v1/send-form', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(fullPayload)
-    })
+  fetch('https://tzkehkqpjyzddzvnvxhez.supabase.co/functions/v1/send-form', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
     .then(res => res.json())
     .then(res => {
-        if (res.success) {
-            alert('Успешно отправлено в Telegram и Google Таблицу!');
-        } else {
-            alert('Ошибка: ' + res.error);
-            console.error('Ошибка:', res);
-        }
+      if (res.success) {
+        alert('✅ Успешно отправлено!');
+      } else {
+        alert('❌ Ошибка: ' + res.error);
+      }
     })
     .catch(err => {
-        alert('Сетевая ошибка. Проверьте консоль.');
-        console.error(err);
+      console.error('Ошибка:', err);
+      alert('Сетевая ошибка. Проверьте консоль.');
     });
 }
 
-// --- Запуск при загрузке страницы ---
 window.onload = () => {
-    const sendButton = document.querySelector('.action-button');
-    if (sendButton) {
-        sendButton.addEventListener('click', sendFormSecurely);
-    }
+  const btn = document.querySelector('.action-button');
+  if (btn) {
+    btn.addEventListener('click', sendFormSecurely);
+  }
 };
