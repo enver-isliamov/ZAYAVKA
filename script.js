@@ -4,9 +4,9 @@ const telegramBotToken = "7134836219:AAFOKRDl_f7_nft2Q52UxXFx244Gpqs7DPs";
 // ID чата Telegram, куда будут отправляться сообщения.
 const chatId = "96609347";
 
-// !!! ВСТАВЬТЕ СЮДА URL ВАШЕГО РАЗВЕРНУТОГО GOOGLE APPS SCRIPT ВЕБ-ПРИЛОЖЕНИЯ !!!
+// !!! ВСТАВЬТЕ СЮДА АКТУАЛЬНЫЙ URL ВАШЕГО РАЗВЕРНУТОГО GOOGLE APPS SCRIPT ВЕБ-ПРИЛОЖЕНИЯ !!!
 // Этот URL вы получите после развертывания скрипта как веб-приложения.
-// Пример: 'https://script.google.com/macros/s/AKfycbzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz/exec';
+// Убедитесь, что он совпадает с URL на скриншоте или тем, что вы скопировали.
 const googleSheetsWebAppURL = 'https://script.google.com/macros/s/AKfycbx0OxRjDOb5xaGBhvoANyLqanlKe-LWHtLkT_dyXEZkyBnNziZrJQNrWvwyi2pLztvAjg/exec'; 
 
 // Базовая месячная цена хранения, до учета дисков. Инициализируется при загрузке страницы.
