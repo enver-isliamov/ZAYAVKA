@@ -7,7 +7,7 @@ const chatId = "96609347";
 // !!! ВСТАВЬТЕ СЮДА АКТУАЛЬНЫЙ URL ВАШЕГО РАЗВЕРНУТОГО GOOGLE APPS SCRIPT ВЕБ-ПРИЛОЖЕНИЯ !!!
 // Этот URL вы получите после развертывания скрипта как веб-приложения.
 // Убедитесь, что он ТОЧНО совпадает с тем, что Google вам дал.
-const googleSheetsWebAppURL = 'https://script.google.com/macros/s/AKfycbx0OxRjDOb5xaGBhvoANyLqanlKe-LWHtLkT_dyXEZkyBnNziZrJQNrWvwyi2pLztvAjg/exec'; 
+const googleSheetsWebAppURL = https://script.google.com/macros/s/AKfycbz-_ro4L5M9teLjYn3_Rid866MD0QkdYBW7wT3YIXXvFqHIEU2KEgYiD0zqBXTp4wXoUQ/exec'; 
 
 // Базовая месячная цена хранения, до учета дисков. Инициализируется при загрузке страницы.
 let baseMonthlyPriceStorage = 0; 
