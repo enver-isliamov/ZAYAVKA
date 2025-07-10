@@ -4,11 +4,6 @@ const telegramBotToken = "7134836219:AAFOKRDl_f7_nft2Q52UxXFx244Gpqs7DPs";
 // ID чата Telegram, куда будут отправляться сообщения.
 const chatId = "96609347";
 
-// URL веб-приложения Google Apps Script, которое обрабатывает запись в Google Таблицу.
-// ОЧЕНЬ ВАЖНО: Замените этот плейсхолдер на фактический URL, полученный после развертывания Apps Script.
-// Пример: 'https://script.google.com/macros/s/AKfycbzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz/exec';
-const googleSheetsWebAppURL = 'https://script.google.com/macros/s/AKfycbz-_ro4L5M9teLjYn3_Rid866MD0QkdYBW7wT3YIXXvFqHIEU2KEgYiD0zqBXTp4wXoUQ/exec'; 
-
 // Базовая месячная цена хранения, до учета дисков. Инициализируется при загрузке страницы.
 let baseMonthlyPriceStorage = 0; 
 
@@ -98,7 +93,7 @@ function updateCalculations(eventSource) {
 
 // --- НОВАЯ ФУНКЦИЯ: СБОР ВСЕХ ДАННЫХ ИЗ ФОРМЫ В ЕДИНЫЙ ОБЪЕКТ ---
 // Эта функция собирает все необходимые данные из полей формы и возвращает их в виде объекта.
-// Это позволяет избежать дублирования кода при отправке данных в разные системы (Telegram, Google Sheets).
+// Это позволяет избежать дублирования кода при отправке данных в разные системы (Telegram).
 function collectFormData() {
     // Данные клиента
     const clientName = document.getElementById('clientName').value.trim();
@@ -126,7 +121,7 @@ function collectFormData() {
     const contractNumber = document.getElementById('contractNumber').value.trim();
     const trafficSource = document.getElementById('trafficSource').value.trim(); // Источник трафика
 
-    // Даты в сыром формате YYYY-MM-DD (для отправки в Google Sheets, где они будут правильно интерпретированы)
+    // Даты в сыром формате YYYY-MM-DD 
     const startDate = document.getElementById('startDate').value;
     const endDate = document.getElementById('endDate').value;
     const reminderDate = document.getElementById('reminderDate').value;
@@ -146,9 +141,8 @@ function collectFormData() {
 }
 
 
-// --- ФУНКЦИЯ ОТПРАВКИ ТЕКСТОВОГО СООБЩЕНИЯ В TELEGRAM И GOOGLE SHEETS ---
-// Эта функция теперь служит координатором: она собирает данные, отправляет их в Telegram,
-// а затем вызывает функцию для отправки в Google Таблицу.
+// --- ФУНКЦИЯ ОТПРАВКИ ТЕКСТОВОГО СООБЩЕНИЯ В TELEGRAM ---
+// Эта функция теперь собирает данные и отправляет их только в Telegram.
 function sendToTelegram() {
     // 1. Сбор всех данных из полей формы с помощью вспомогательной функции.
     const data = collectFormData(); 
@@ -182,9 +176,6 @@ function sendToTelegram() {
 
     // 3. Отправка сообщения в Telegram.
     sendMessageToTelegram(message);
-    
-    // 4. Отправка собранных данных в Google Таблицу.
-    sendToGoogleSheets(data);
 }
 
 // --- ФУНКЦИЯ ОТПРАВКИ ТЕКСТОВОГО СООБЩЕНИЯ В TELEGRAM API ---
@@ -220,67 +211,6 @@ function sendMessageToTelegram(message) {
         alert('Произошла ошибка при отправке заказа в Telegram. Проверьте консоль для деталей.');
     });
 }
-
-// --- НОВАЯ ФУНКЦИЯ: ОТПРАВКА ДАННЫХ В GOOGLE ТАБЛИЦУ ЧЕРЕЗ APPS SCRIPT WEB APP ---
-// Принимает объект с данными, собранными из формы, и отправляет его в Google Apps Script.
-function sendToGoogleSheets(data) {
-    // Проверка, настроен ли URL для Google Sheets Web App.
-    if (!googleSheetsWebAppURL || googleSheetsWebAppURL === 'ВСТАВЬТЕ_СЮДА_URL_ИЗ_GOOGLE_APPS_SCRIPT') {
-        console.error('Google Apps Script Web App URL не настроен. Данные в таблицу не будут отправлены.');
-        alert('Ошибка: URL для Google Таблицы не настроен. Пожалуйста, обратитесь к администратору.');
-        return;
-    }
-
-    // Подготовка объекта payload для отправки.
-    // Ключи в этом объекте должны ТОЧНО совпадать с ключами, которые ожидает функция doPost
-    // в вашем Google Apps Script для корректного маппинга данных в столбцы.
-    // Даты отправляются в формате YYYY-MM-DD, что Google Таблицы хорошо понимают.
-    const payload = {
-        clientName: data.clientName,
-        phone: data.phone,
-        address: data.address,
-        carNumber: data.carNumber,
-        additionalNotes: data.additionalNotes,
-        monthlyPrice: data.monthlyPrice,
-        tireCount: data.tireCount,
-        hasDisk: data.hasDisk,
-        startDate: data.startDate, 
-        storageDuration: data.storageDuration,
-        reminderDate: data.reminderDate, 
-        endDate: data.endDate, 
-        orderCode: data.orderCode,
-        cellCode: data.cellCode,
-        totalPrice: data.totalPrice,
-        debt: data.debt,
-        contractNumber: data.contractNumber,
-        // Поле 'sezon' отсутствует в вашей схеме Google Таблицы, поэтому не включаем его в payload.
-        trafficSource: data.trafficSource 
-    };
-
-    fetch(googleSheetsWebAppURL, {
-        method: 'POST', // Метод POST для отправки данных
-        headers: {
-            'Content-Type': 'application/json' // Важно: указываем, что тело запроса - это JSON
-        },
-        body: JSON.stringify(payload) // Преобразуем JavaScript объект в JSON строку
-    })
-    .then(response => response.json()) // Парсим ответ от Apps Script как JSON
-    .then(result => {
-        if (result.success) {
-            console.log('Данные успешно отправлены в Google Таблицу:', result.message);
-            // Можно добавить alert, если хотите визуальное подтверждение на странице
-            // alert('Данные успешно отправлены в Google Таблицу!'); 
-        } else {
-            console.error('Ошибка при отправке данных в Google Таблицу:', result.error);
-            alert('Произошла ошибка при отправке данных в Google Таблицу: ' + result.error);
-        }
-    })
-    .catch(error => {
-        console.error('Произошла сетевая ошибка при отправке данных в Google Таблицу:', error);
-        alert('Произошла сетевая ошибка при отправке данных в Google Таблицу. Проверьте консоль для деталей.');
-    });
-}
-
 
 // --- БЛОК ИНИЦИАЛИЗАЦИИ ПРИ ЗАГРУЗКЕ СТРАНИЦЫ ---
 // Этот блок кода выполняется один раз, когда вся страница и DOM загружены.
@@ -332,7 +262,7 @@ window.onload = () => {
     updateCalculations('init');
 
     // Привязка функции sendToTelegram к кнопке "Оформить" (или любой другой кнопке с классом 'action-button').
-    // Теперь эта функция вызывает как отправку в Telegram, так и в Google Таблицу.
+    // Теперь эта функция вызывает только отправку в Telegram.
     const sendButton = document.querySelector('.action-button');
     if(sendButton){
         sendButton.addEventListener('click', sendToTelegram);
