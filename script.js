@@ -224,7 +224,7 @@ function sendMessageToTelegram(message) {
 // Принимает объект с данными, собранными из формы, и отправляет его в Google Apps Script.
 function sendToGoogleSheets(data) {
     // Проверка, настроен ли URL для Google Sheets Web App.
-    if (!googleSheetsWebAppURL || googleSheetsWebAppURL === 'ВСТАВЬТЕ_СЮДА_URL_ИЗ_GOOGLE_APPS_SCRIPT') {
+    if (!googleSheetsWebAppURL || googleSheetsWebAppURL === 'https://script.google.com/macros/s/AKfycbz-_ro4L5M9teLjYn3_Rid866MD0QkdYBW7wT3YIXXvFqHIEU2KEgYiD0zqBXTp4wXoUQ/exec') {
         console.error('Google Apps Script Web App URL не настроен. Данные в таблицу не будут отправлены.');
         alert('Ошибка: URL для Google Таблицы не настроен. Пожалуйста, обратитесь к администратору.');
         return;
