@@ -182,7 +182,7 @@ function processFormSubmission() {
 🌐 <i>Источник:</i> <span class="tg-spoiler"> ${data.trafficSource || 'Не указан'} </span>
 ❱❱❱ Договор: <b>${data.contractNumber || 'Не сгенерирован'}</b> <a href="https://otelshin.ru">на сайте</a> ❰❰❰
     `;
-
+console.timeEnd('buildTelegramMessage');
     // 3. Отправка сообщения в Telegram.
     sendMessageToTelegram(message);
     
