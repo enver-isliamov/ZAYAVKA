@@ -7,7 +7,7 @@ const chatId = "96609347";
 // URL веб-приложения Google Apps Script, которое обрабатывает запись в Google Таблицу.
 // ОЧЕНЬ ВАЖНО: Замените этот плейсхолдер на фактический URL, полученный после развертывания Apps Script.
 // Я ВСТАВИЛ ВАШ URL, но убедитесь, что он актуален после вашего развертывания!
-const googleSheetsWebAppURL = 'https://script.google.com/macros/s/AKfycbz-_ro4L5M9teLjYn3_Rid866MD0QkdYBW7wT3YIXXvFqHIEU2KEgYiD0zqBXTp4wXoUQ/exec'; 
+const googleSheetsWebAppURL = 'https://script.google.com/macros/s/AKfycbxnXyD5Yl2jWZQ-TRsJTtvKd2Wok7BbUBD_4EBPvlSB0yZwbmGjNe_v7zn2C7QFhzBDKg/exec'; 
 
 // Базовая месячная цена хранения, до учета дисков. Инициализируется при загрузке страницы.
 let baseMonthlyPriceStorage = 0; 
@@ -225,7 +225,7 @@ function sendMessageToTelegram(message) {
 // Принимает объект с данными, собранными из формы, и отправляет его в Google Apps Script.
 function sendToGoogleSheets(data) {
     // Проверка, настроен ли URL для Google Sheets Web App.
-    if (!googleSheetsWebAppURL || googleSheetsWebAppURL === 'https://script.google.com/macros/s/AKfycbz-_ro4L5M9teLjYn3_Rid866MD0QkdYBW7wT3YIXXvFqHIEU2KEgYiD0zqBXTp4wXoUQ/exec') {
+    if (!googleSheetsWebAppURL || googleSheetsWebAppURL === 'https://script.google.com/macros/s/AKfycbxnXyD5Yl2jWZQ-TRsJTtvKd2Wok7BbUBD_4EBPvlSB0yZwbmGjNe_v7zn2C7QFhzBDKg/exec') {
         console.error('Google Apps Script Web App URL не настроен. Данные в таблицу не будут отправлены.');
         alert('Ошибка: URL для Google Таблицы не настроен. Пожалуйста, обратитесь к администратору.');
         return;
