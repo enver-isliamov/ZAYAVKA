@@ -150,8 +150,11 @@ function collectFormData() {
 // Эта функция собирает данные, отправляет их в Telegram, а затем в Google Таблицу.
 // Она привязана к кнопке "Оформить".
 function processFormSubmission() { 
+      console.time('processFormSubmission_total_sync'); // Начнем отсчет для всей синхронной части
     // 1. Сбор всех данных из полей формы с помощью вспомогательной функции.
+    console.time('collectFormData');
     const data = collectFormData(); 
+    console.timeEnd('collectFormData'); 
 
     // 2. Формирование сообщения для Telegram
     // Используем собранные данные из объекта 'data' для создания сообщения.
