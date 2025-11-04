@@ -113,7 +113,7 @@ function collectFormData() {
     const hasDisk = document.getElementById('hasDisk').value.trim();
     const sezon = document.getElementById('seZon').value.trim();
     const orderCode = document.getElementById('order').value.trim(); // Код склада/заказа
-    const dotCode = document.getElementById('dotCode').value.trim();
+    const dotCode = document.getElementById('dotCode').value.trim(); //DOT код
 
     // Ищем поле ячейки по placeholder'у, так как у него нет ID.
     const cellCode = document.querySelector('.tag.tag-location input[placeholder="E-45"]')?.value.trim() || '';
@@ -140,11 +140,11 @@ function collectFormData() {
 
     // Возвращаем объект со всеми собранными данными
     return {
-        clientName, phone, address, carNumber, tireCount, hasDisk, sezon, orderCode, cellCode,
+        clientName, phone, address, carNumber, tireCount, hasDisk, sezon, orderCode, cellCode, dotCode, // Добавлено DOT код
         additionalNotes, storageDuration, monthlyPrice, totalPrice, debt, contractNumber, trafficSource,
         startDate, endDate, reminderDate, // Сырые даты
         formattedStartDate, formattedEndDate, formattedReminderDate, // Форматированные даты
-        dotCode // Добавлено DOT код
+        
     };
 }
 
@@ -172,9 +172,10 @@ function processFormSubmission() {
 -    -    -     <b>ДЕТЕЛИ УСЛУГИ</b>    -    -    -
 --- ---- ---- ---- ------ ---- ---- ---- ---
 <blockquote>⭕️ ${data.additionalNotes || 'Нет дополнительных заметок.'}
-Кол-во шин: <b>${data.tireCount || '0'} шт.</b> Сезон: <b>${data.sezon || 'Не указан'}</b> 
-🛞 <b>Диски:</b> ${data.hasDisk || 'Нет'} </blockquote> 
+Кол-во шин: <b>${data.tireCount || '0'} шт.</b> Сезон: <b>${data.sezon || 'Не указан'}</b>
 DOT код: <b>${data.dotCode || 'Не указан'}</b>
+🛞 <b>Диски:</b> ${data.hasDisk || 'Нет'} </blockquote> 
+
 --- ---- ---- ---- ------ ---- ---- ---- ---
 <blockquote>📦 <b>Склад:</b> ${data.orderCode || 'Не указан'}
 ⚡️ Хранение: <b>${data.storageDuration || '0'} мес.</b> ❱ ${data.formattedStartDate} ➽ ${data.formattedEndDate}
