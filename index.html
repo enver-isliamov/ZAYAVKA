@@ -7,9 +7,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css" /><!-- Для iPhone (Apple Touch Icon) -->
-    <link rel="apple-touch-icon" sizes="180x180" href="icon-add.png" /><!-- Для фавикона (современные браузеры, SVG) -->
-    <link rel="icon" type="image/svg+xml" href="icon-add.svg" /><!-- Если вы хотите, чтобы сайт открывался как приложение на iPhone -->
+    <link rel="stylesheet" href="styles.css" />
+    <!-- Для iPhone (Apple Touch Icon) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="icon-add.png" />
+    <!-- Для фавикона (современные браузеры, SVG) -->
+    <link rel="icon" type="image/svg+xml" href="icon-add.svg" />
+    <!-- Если вы хотите, чтобы сайт открывался как приложение на iPhone -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="ЗАЯВКА ШИН" />
@@ -20,18 +23,18 @@
             <div class="user-info">
                 <div class="user-info-item">
                     <svg fill="currentColor" height="18" viewbox="0 0 24 24" width="18"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path></svg>
-                    <input type="text" class="editable" id="clientName" value="" placeholder="Фамилия Имя Отчество" />
+                    <input class="editable" id="clientName" placeholder="Фамилия Имя Отчество" type="text" value="" />
                 </div>
                 <div class="user-info-item">
                     <svg fill="currentColor" height="18" viewbox="0 0 24 24" width="18"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"></path></svg>
-                    <input type="tel" class="editable" id="phone" placeholder="+7 (___) ___-__-__" />
+                    <input class="editable" id="phone" placeholder="+7 (___) ___-__-__" type="tel" />
                 </div>
                 <div class="user-info-item">
                     <svg fill="currentColor" height="18" viewbox="0 0 24 24" width="18"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path></svg>
-                    <input type="text" class="editable" value="" placeholder="Улица, №-дома " />
+                    <input class="editable" placeholder="Улица, №-дома " type="text" value="" />
                 </div>
             </div>
-            <button class="logout-button" aria-label="Выйти">
+            <button aria-label="Выйти" class="logout-button">
                 <svg fill="currentColor" height="24" viewbox="0 0 24 24" width="24"><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path></svg>
             </button>
         </div>
@@ -44,24 +47,24 @@
                         <div class="tag tag-contract">
                             <svg fill="currentColor" height="14" viewbox="0 0 24 24" width="14"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"></path></svg>
                             <span>Договор:</span>
-                            <input type="text" class="editable" id="contractNumber" value="" placeholder="Номер договора генерируется атоматически" />
+                            <input class="editable" id="contractNumber" placeholder="Номер договора генерируется атоматически" type="text" value="" />
                         </div>
                     </div>
                     <div class="tags">
                         <div class="tag tag-location">
                             <svg fill="currentColor" height="14" viewbox="0 0 24 24" width="14"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path></svg>
                             <span>Склад:</span>
-                            <input type="text" class="editable tag-code-input" id="order" maxlength="5" style="width: 7ch;" value="ABD13" />
+                            <input class="editable tag-code-input" id="order" maxlength="5" style="width: 7ch;" type="text" value="ABD13" />
                         </div>
                         <div class="tag tag-location">
                             <svg fill="currentColor" height="14" viewbox="0 0 24 24" width="14"><path d="M18 4v16H6V4h12m0-2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM8 6h8v2H8V6zm0 4h8v2H8v-2z"></path></svg>
                             <span>Ячейка:</span>
-                            <input type="text" class="editable" maxlength="20" placeholder="E-45" style="width: 7ch;" value="" />
+                            <input class="editable" maxlength="20" placeholder="E-45" style="width: 7ch;" type="text" value="" />
                         </div>
                         <div class="tag tag-location">
                             <svg fill="currentColor" height="14" viewbox="0 0 24 24" width="14"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path></svg>
                             <span>Источник:</span>
-                            <input type="text" class="editable tag-code-input" id="trafficSource" maxlength="" placeholder="Авито" style="width: 7ch;" value="" />
+                            <input class="editable tag-code-input" id="trafficSource" maxlength="" placeholder="Авито" style="width: 7ch;" type="text" value="" />
                         </div>
                     </div>
                 </div>
@@ -69,7 +72,7 @@
             <div class="card-body">
                 <div class="info-block">
                     <label class="info-block-label">DOT код</label>
-                    <input type="text" class="editable" id="dotCode" placeholder="Введите DOT код" />
+                    <input class="editable" id="dotCode" placeholder="Введите DOT код" type="text" />
                 </div>
                 <div class="info-block" id="showQrContent">
                     <div class="info-block-title">
@@ -80,11 +83,11 @@
                 </div>
                 <div class="info-block">
                     <label class="info-block-label">Описание заказа</label>
-                    <textarea class="editable" id="orderDescription" rows="5" placeholder="Добавьте описание заказа..."></textarea>
+                    <textarea class="editable" id="orderDescription" placeholder="Добавьте описание заказа..." rows="5"></textarea>
                 </div>
                 <div class="info-block">
                     <label class="info-block-label">Примечание</label>
-                    <textarea class="editable" id="note" rows="3" placeholder="Добавьте примечание..."></textarea>
+                    <textarea class="editable" id="note" placeholder="Добавьте примечание..." rows="3"></textarea>
                 </div>
             </div>
             <div class="card-footer">
