@@ -113,6 +113,8 @@ function collectFormData() {
     const hasDisk = document.getElementById('hasDisk').value.trim();
     const sezon = document.getElementById('seZon').value.trim();
     const orderCode = document.getElementById('order').value.trim(); // Код склада/заказа
+    const dotCode = document.getElementById('dotCode').value.trim();
+
     // Ищем поле ячейки по placeholder'у, так как у него нет ID.
     const cellCode = document.querySelector('.tag.tag-location input[placeholder="E-45"]')?.value.trim() || '';
     const additionalNotes = document.getElementById('qrContent').value.trim(); // Содержание QR/дополнительные заметки
@@ -141,7 +143,8 @@ function collectFormData() {
         clientName, phone, address, carNumber, tireCount, hasDisk, sezon, orderCode, cellCode,
         additionalNotes, storageDuration, monthlyPrice, totalPrice, debt, contractNumber, trafficSource,
         startDate, endDate, reminderDate, // Сырые даты
-        formattedStartDate, formattedEndDate, formattedReminderDate // Форматированные даты
+        formattedStartDate, formattedEndDate, formattedReminderDate, // Форматированные даты
+        dotCode // Добавлено DOT код
     };
 }
 
@@ -170,7 +173,8 @@ function processFormSubmission() {
 --- ---- ---- ---- ------ ---- ---- ---- ---
 <blockquote>⭕️ ${data.additionalNotes || 'Нет дополнительных заметок.'}
 Кол-во шин: <b>${data.tireCount || '0'} шт.</b> Сезон: <b>${data.sezon || 'Не указан'}</b> 
-🛞 <b>Диски:</b> ${data.hasDisk || 'Нет'} </blockquote>
+🛞 <b>Диски:</b> ${data.hasDisk || 'Нет'} </blockquote> 
+DOT код: <b>${data.dotCode || 'Не указан'}</b>
 --- ---- ---- ---- ------ ---- ---- ---- ---
 <blockquote>📦 <b>Склад:</b> ${data.orderCode || 'Не указан'}
 ⚡️ Хранение: <b>${data.storageDuration || '0'} мес.</b> ❱ ${data.formattedStartDate} ➽ ${data.formattedEndDate}
@@ -257,7 +261,8 @@ function sendToGoogleSheets(data) {
         totalPrice: data.totalPrice,
         debt: data.debt,
         contractNumber: data.contractNumber,
-        trafficSource: data.trafficSource 
+        trafficSource: data.trafficSource,
+        dotCode: data.dotCode // Добавлено
     };
 
     fetch(googleSheetsWebAppURL, {
