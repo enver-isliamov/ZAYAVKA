@@ -185,7 +185,6 @@ function processFormSubmission() {
 ------------------------------------------
 ❱❱❱ Договор: <b>${data.contractNumber || 'Не сгенерирован'}</b> <a href="https://otelshin.ru">на сайте</a> ❰❰❰
 🌐 <i>Источник:</i> <span class="tg-spoiler"> ${data.trafficSource || 'Не указан'} </span>
-
     `;
 console.timeEnd('buildTelegramMessage');
     // 3. Отправка сообщения в Telegram.
