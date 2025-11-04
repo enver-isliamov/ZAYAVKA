@@ -173,9 +173,8 @@ function processFormSubmission() {
 --- ---- ---- ---- ------ ---- ---- ---- ---
 <blockquote>⭕️ ${data.additionalNotes || 'Нет дополнительных заметок.'}
 Кол-во шин: <b>${data.tireCount || '0'} шт.</b> Сезон: <b>${data.sezon || 'Не указан'}</b>
-DOT код: <b>${data.dotCode || 'Не указан'}</b>
+🔍<b>DOT</b код: <b>${data.dotCode || 'Не указан'}</b>
 🛞 <b>Диски:</b> ${data.hasDisk || 'Нет'} </blockquote> 
-
 --- ---- ---- ---- ------ ---- ---- ---- ---
 <blockquote>📦 <b>Склад:</b> ${data.orderCode || 'Не указан'}
 ⚡️ Хранение: <b>${data.storageDuration || '0'} мес.</b> ❱ ${data.formattedStartDate} ➽ ${data.formattedEndDate}
@@ -184,8 +183,9 @@ DOT код: <b>${data.dotCode || 'Не указан'}</b>
 <blockquote>💳Сумма заказа: <b>${data.totalPrice || '0'} ₽</b> [${data.monthlyPrice || '0'} ₽/мес.]
 🚨 <b>Долг:</b> ${data.debt || '0'} ₽</blockquote>
 ------------------------------------------
-🌐 <i>Источник:</i> <span class="tg-spoiler"> ${data.trafficSource || 'Не указан'} </span>
 ❱❱❱ Договор: <b>${data.contractNumber || 'Не сгенерирован'}</b> <a href="https://otelshin.ru">на сайте</a> ❰❰❰
+🌐 <i>Источник:</i> <span class="tg-spoiler"> ${data.trafficSource || 'Не указан'} </span>
+
     `;
 console.timeEnd('buildTelegramMessage');
     // 3. Отправка сообщения в Telegram.
